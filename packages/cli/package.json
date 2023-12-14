@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@effect/platform": "workspace:*",
-    "@effect/platform-node": "^0.35.1",
+    "@effect/platform-node": "workspace:*",
     "@effect/printer": "workspace:*",
     "@effect/printer-ansi": "workspace:*",
     "@effect/schema": "workspace:*",
