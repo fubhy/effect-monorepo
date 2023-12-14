@@ -48,6 +48,7 @@
     "@effect/printer": "workspace:*",
     "@effect/printer-ansi": "workspace:*",
     "@effect/schema": "workspace:*",
+    "@types/node": "^20.10.4",
     "effect": "workspace:*"
   },
   "effect": {
