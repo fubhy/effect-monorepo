@@ -1,6 +1,8 @@
 {
   "$schema": "../../node_modules/@effect/docgen/schema.json",
-  "exclude": ["src/internal/**/*.ts"],
+  "exclude": [
+    "src/internal/**/*.ts"
+  ],
   "parseCompilerOptions": {
     "noEmit": true,
     "strict": true,
@@ -10,11 +12,7 @@
     "lib": [
       "ES2022",
       "DOM"
-    ],
-    "paths": {
-      "@effect/schema": ["./src/index.js"],
-      "@effect/schema/*": ["./src/*.js"]
-    }
+    ]
   },
   "examplesCompilerOptions": {
     "noEmit": true,
@@ -25,10 +23,6 @@
     "lib": [
       "ES2022",
       "DOM"
-    ],
-    "paths": {
-      "@effect/schema": ["../../src/index.js"],
-      "@effect/schema/*": ["../../src/*.js"]
-    }
+    ]
   }
 }
