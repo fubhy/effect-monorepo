@@ -26,13 +26,13 @@ jobs:
       - name: Check source state
         run: git add packages/*/src && git diff-index --cached HEAD --exit-code packages/*/src
       - run: pnpm circular
-      - name: Create Release Pull Request or Publish
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: pnpm update-version
-          publish: pnpm changeset publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # - name: Create Release Pull Request or Publish
+      #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      #   id: changesets
+      #   uses: changesets/action@v1
+      #   with:
+      #     version: pnpm update-version
+      #     publish: pnpm changeset publish
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
