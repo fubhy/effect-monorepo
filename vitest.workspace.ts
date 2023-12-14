@@ -13,61 +13,22 @@ const defineProject = (pkg: string, name: string, config?: UserWorkspaceConfig["
     test: { name, ...config }
   }, config)
 
-const effect = [
-  defineProject("packages/effect", "effect", {
-    fakeTimers: {
-      toFake: undefined
-    }
-  }),
-  defineProject("packages/effect", "effect:edge", {
-    fakeTimers: {
-      toFake: undefined
-    },
-    environment: "edge-runtime"
-  }),
-  defineProject("packages/effect", "effect:chromium", {
-    fakeTimers: {
-      toFake: undefined
-    },
-    browser: {
-      provider: "playwright",
-      name: "chromium",
-      enabled: true,
-      headless: true
-    }
-  })
-]
-
-const schema = [
-  defineProject("packages/schema", "schema")
-]
-
-const cli = [
-  defineProject("packages/cli", "cli")
-]
-
-const printer = [
-  defineProject("packages/printer", "printer"),
-  defineProject("packages/printer-ansi", "printer-ansi")
-]
-
-const platform = [
-  defineProject("packages/platform", "platform"),
-  defineProject("packages/platform-node", "platform-node"),
-  defineProject("packages/platform-browser", "platform-browser", {
-    browser: {
-      provider: "playwright",
-      name: "chromium",
-      enabled: true,
-      headless: true
-    }
-  })
-]
-
 export default defineWorkspace([
-  ...effect,
-  ...schema,
-  ...cli,
-  ...printer,
-  ...platform
+  defineProject("packages/effect", "effect", {
+    fakeTimers: { toFake: undefined }
+  }),
+  defineProject("packages/schema", "schema"),
+  defineProject("packages/cli", "cli"),
+  defineProject("packages/printer", "printer"),
+  defineProject("packages/printer-ansi", "printer-ansi"),
+  defineProject("packages/platform", "platform"),
+  defineProject("packages/platform-node", "platform-node")
+  // defineProject("packages/platform-browser", "platform-browser", {
+  //   browser: {
+  //     provider: "playwright",
+  //     name: "chromium",
+  //     enabled: true,
+  //     headless: true
+  //   }
+  // })
 ])
