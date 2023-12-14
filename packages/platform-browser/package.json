@@ -9,7 +9,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/effect-ts/platform.git"
+    "url": "https://github.com/effect-ts/platform.git",
+    "directory": "packages/platform-browser"
   },
   "homepage": "https://github.com/effect-ts/platform",
   "author": "Effect contributors",

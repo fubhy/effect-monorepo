@@ -41,6 +41,7 @@
     }
   },
   "scripts": {
+    "postinstall": "pnpm build-prepare",
     "build": "pnpm build-prepare && pnpm build-esm && pnpm build-cjs && pnpm build-annotate && build-utils pack-v2",
     "build-prepare": "build-utils prepare-v2",
     "build-esm": "tsc -b tsconfig.build.json",
