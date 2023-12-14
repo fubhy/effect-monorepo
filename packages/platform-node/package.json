@@ -1,0 +1,56 @@
+{
+  "name": "@effect/platform-node",
+  "type": "module",
+  "version": "0.37.0",
+  "description": "Unified interfaces for common platform-specific services",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/effect-ts/effect.git",
+    "directory": "packages/platform-node"
+  },
+  "bugs": {
+    "url": "https://github.com/effect-ts/effect/issues"
+  },
+  "homepage": "https://effect.website",
+  "author": "Effect contributors",
+  "license": "MIT",
+  "effect": {
+    "generateExports": {
+      "include": [
+        "*.ts",
+        "Http/*.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "pnpm build-prepare && pnpm build-esm && pnpm build-cjs && pnpm build-annotate && build-utils pack-v2",
+    "build-prepare": "build-utils prepare-v2",
+    "build-esm": "tsc -b tsconfig.build.json",
+    "build-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",
+    "build-annotate": "babel build --plugins annotate-pure-calls --out-dir build --source-maps"
+  },
+  "dependencies": {
+    "mime": "^3.0.0",
+    "multipasta": "^0.1.19"
+  },
+  "peerDependencies": {
+    "@effect/platform": "workspace:*",
+    "effect": "workspace:*"
+  },
+  "devDependencies": {
+    "@effect/platform": "workspace:*",
+    "@effect/schema": "workspace:*",
+    "@types/mime": "^3.0.4",
+    "@types/node": "^20.10.4",
+    "@types/tar": "^6.1.10",
+    "effect": "workspace:*",
+    "tar": "^6.2.0"
+  }
+}

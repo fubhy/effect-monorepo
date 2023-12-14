@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../effect" },
+    { "path": "../schema" },
+    { "path": "../printer" },
+    { "path": "../printer-ansi" },
+    { "path": "../platform" },
+    { "path": "../platform-node" },
+  ],
+  "compilerOptions": {
+    "outDir": "build/src",
+    "tsBuildInfoFile": ".tsbuildinfo/src.tsbuildinfo",
+    "rootDir": "src",
+    "exactOptionalPropertyTypes": false
+  }
+}

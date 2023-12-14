@@ -1,0 +1,47 @@
+{
+  "name": "@effect/schema",
+  "version": "0.53.2",
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "author": "Giulio Canti <giulio.canti@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/effect-ts/effect.git",
+    "directory": "packages/schema"
+  },
+  "bugs": {
+    "url": "https://github.com/effect-ts/effect/issues"
+  },
+  "homepage": "https://effect.website",
+  "description": "Modeling the schema of data structures as first-class values",
+  "tags": [
+    "typescript",
+    "schema",
+    "validation"
+  ],
+  "keywords": [
+    "typescript",
+    "schema",
+    "validation"
+  ],
+  "scripts": {
+    "build": "pnpm build-prepare && pnpm build-esm && pnpm build-cjs && pnpm build-annotate && build-utils pack-v2",
+    "build-prepare": "build-utils prepare-v2",
+    "build-esm": "tsc -b tsconfig.build.json",
+    "build-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",
+    "build-annotate": "babel build --plugins annotate-pure-calls --out-dir build --source-maps"
+  },
+  "peerDependencies": {
+    "effect": "workspace:*",
+    "fast-check": "^3.13.2"
+  },
+  "devDependencies": {
+    "ajv": "^8.12.0",
+    "effect": "workspace:*",
+    "fast-check": "^3.14.0"
+  }
+}

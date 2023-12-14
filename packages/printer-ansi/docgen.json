@@ -1,0 +1,22 @@
+{
+  "$schema": "../../node_modules/@effect/docgen/schema.json",
+  "exclude": ["src/internal/**/*.ts"],
+  "parseCompilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "paths": {
+      "@effect/printer": ["../printer/src/index.js"],
+      "@effect/printer/*": ["../printer/src/*.js"]
+    }
+  },
+  "examplesCompilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "paths": {
+      "@effect/printer": ["../printer/src/index.js"],
+      "@effect/printer/*": ["../printer/src/*.js"]
+    }
+  }
+}

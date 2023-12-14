@@ -1,0 +1,38 @@
+{
+  "name": "effect",
+  "version": "2.0.0-next.60",
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "author": "Michael Arnaldi <michael.arnaldi@effectful.co>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/effect-ts/effect.git",
+    "directory": "packages/effect"
+  },
+  "bugs": {
+    "url": "https://github.com/effect-ts/effect/issues"
+  },
+  "homepage": "https://effect.website",
+  "description": "Functional programming in TypeScript",
+  "tags": [
+    "typescript",
+    "algebraic-data-types",
+    "functional-programming"
+  ],
+  "keywords": [
+    "typescript",
+    "algebraic-data-types",
+    "functional-programming"
+  ],
+  "scripts": {
+    "build": "pnpm build-prepare && pnpm build-esm && pnpm build-cjs && pnpm build-annotate && build-utils pack-v2",
+    "build-prepare": "build-utils prepare-v2",
+    "build-esm": "tsc -b tsconfig.build.json",
+    "build-cjs": "babel build/esm --plugins @babel/transform-export-namespace-from --plugins @babel/transform-modules-commonjs --out-dir build/cjs --source-maps",
+    "build-annotate": "babel build --plugins annotate-pure-calls --out-dir build --source-maps"
+  }
+}
