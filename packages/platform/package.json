@@ -2,26 +2,31 @@
   "name": "@effect/platform",
   "type": "module",
   "version": "0.37.0",
+  "author": "Effect contributors",
+  "license": "MIT",
   "description": "Unified interfaces for common platform-specific services",
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
+  "homepage": "https://effect.website",
   "repository": {
     "type": "git",
     "url": "https://github.com/effect-ts/effect.git",
     "directory": "packages/platform"
   },
-  "homepage": "https://effect.website",
-  "author": "Effect contributors",
-  "license": "MIT",
-  "effect": {
-    "generateExports": {
-      "include": [
-        "*.ts",
-        "Http/*.ts"
-      ]
-    }
+  "bugs": {
+    "url": "https://github.com/effect-ts/effect/issues"
+  },
+  "tags": [
+    "typescript",
+    "algebraic-data-types",
+    "functional-programming"
+  ],
+  "keywords": [
+    "typescript",
+    "algebraic-data-types",
+    "functional-programming"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "pnpm build-esm && pnpm build-cjs && pnpm build-annotate && build-utils pack-v2",
@@ -42,5 +47,13 @@
     "@effect/schema": "workspace:*",
     "@types/path-browserify": "^1.0.2",
     "effect": "workspace:*"
+  },
+  "effect": {
+    "generateExports": {
+      "include": [
+        "*.ts",
+        "Http/*.ts"
+      ]
+    }
   }
 }

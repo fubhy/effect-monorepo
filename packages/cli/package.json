@@ -2,12 +2,10 @@
   "name": "@effect/cli",
   "version": "0.25.4",
   "type": "module",
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "author": "Michael Arnaldi <ma@matechs.com>",
+  "author": "Effect contributors",
   "license": "MIT",
+  "description": "Functional programming in TypeScript",
+  "homepage": "https://effect.website",
   "repository": {
     "type": "git",
     "url": "https://github.com/effect-ts/effect.git",
@@ -16,8 +14,6 @@
   "bugs": {
     "url": "https://github.com/effect-ts/effect/issues"
   },
-  "homepage": "https://effect.website",
-  "description": "Functional programming in TypeScript",
   "tags": [
     "typescript",
     "algebraic-data-types",
@@ -28,17 +24,9 @@
     "algebraic-data-types",
     "functional-programming"
   ],
-  "effect": {
-    "generateExports": {
-      "include": [
-        "**/*.ts"
-      ]
-    },
-    "generateIndex": {
-      "include": [
-        "**/*.ts"
-      ]
-    }
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "postinstall": "pnpm build-prepare",
@@ -62,5 +50,17 @@
     "@effect/printer-ansi": "workspace:*",
     "@effect/schema": "workspace:*",
     "effect": "workspace:*"
+  },
+  "effect": {
+    "generateExports": {
+      "include": [
+        "**/*.ts"
+      ]
+    },
+    "generateIndex": {
+      "include": [
+        "**/*.ts"
+      ]
+    }
   }
 }

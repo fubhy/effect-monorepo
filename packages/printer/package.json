@@ -2,12 +2,10 @@
   "name": "@effect/printer",
   "version": "0.27.0",
   "type": "module",
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "author": "Michael Arnaldi <ma@matechs.com>",
+  "author": "Effect contributors",
   "license": "MIT",
+  "description": "Unified interfaces for common platform-specific services",
+  "homepage": "https://effect.website",
   "repository": {
     "type": "git",
     "url": "https://github.com/effect-ts/effect.git",
@@ -16,8 +14,6 @@
   "bugs": {
     "url": "https://github.com/effect-ts/effect/issues"
   },
-  "homepage": "https://effect.website",
-  "description": "Functional programming in TypeScript",
   "tags": [
     "typescript",
     "algebraic-data-types",
@@ -28,6 +24,10 @@
     "algebraic-data-types",
     "functional-programming"
   ],
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "scripts": {
     "build": "pnpm build-prepare && pnpm build-esm && pnpm build-cjs && pnpm build-annotate && build-utils pack-v2",
     "build-prepare": "build-utils prepare-v2",
