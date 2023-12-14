@@ -11,6 +11,7 @@
     { "path": "../platform-node" },
   ],
   "compilerOptions": {
+    "types": ["node"],
     "tsBuildInfoFile": ".tsbuildinfo/examples.tsbuildinfo",
     "rootDir": "examples",
     "noEmit": true
