@@ -430,9 +430,9 @@ interface SuspendTo1 {
   readonly as: ReadonlyArray<SuspendTo1>
 }
 const suspend1: S.Schema<SuspendTo1> = S.struct({
-    a: S.number,
-    as: S.array(S.suspend(() => suspend1))
-  })
+  a: S.number,
+  as: S.array(S.suspend(() => suspend1))
+})
 
 interface LazyFrom2 {
   readonly a: string
@@ -442,12 +442,10 @@ interface LazyTo2 {
   readonly a: number
   readonly as: ReadonlyArray<LazyTo2>
 }
-const lazy2: S.Schema<LazyFrom2, LazyTo2> =
-  S.struct({
-    a: S.NumberFromString,
-    as: S.array(S.suspend(() => lazy2))
-  })
-
+const lazy2: S.Schema<LazyFrom2, LazyTo2> = S.struct({
+  a: S.NumberFromString,
+  as: S.array(S.suspend(() => lazy2))
+})
 
 // ---------------------------------------------
 // rename
@@ -457,33 +455,33 @@ const lazy2: S.Schema<LazyFrom2, LazyTo2> =
 S.rename(S.struct({ a: S.string, b: S.number }), {})
 
 // $ExpectType Schema<{ readonly a: string; readonly b: number; }, { readonly c: string; readonly b: number; }>
-S.rename(S.struct({ a: S.string, b: S.number }), { a: 'c' })
+S.rename(S.struct({ a: S.string, b: S.number }), { a: "c" })
 
 // $ExpectType Schema<{ readonly a: string; readonly b: number; }, { readonly c: string; readonly d: number; }>
-S.rename(S.struct({ a: S.string, b: S.number }), { a: 'c', b: 'd' })
+S.rename(S.struct({ a: S.string, b: S.number }), { a: "c", b: "d" })
 
-const a = Symbol.for('@effect/schema/dtslint/a')
+const a = Symbol.for("@effect/schema/dtslint/a")
 
 // $ExpectType Schema<{ readonly a: string; readonly b: number; }, { readonly [a]: string; readonly b: number; }>
-S.rename(S.struct({ a: S.string, b: S.number }), { a: a })
+S.rename(S.struct({ a: S.string, b: S.number }), { a })
 
 // @ts-expect-error
-S.rename(S.struct({ a: S.string, b: S.number }), { c: 'd' })
+S.rename(S.struct({ a: S.string, b: S.number }), { c: "d" })
 
 // @ts-expect-error
-S.rename(S.struct({ a: S.string, b: S.number }), { a: 'c', d: 'e' })
+S.rename(S.struct({ a: S.string, b: S.number }), { a: "c", d: "e" })
 
 // $ExpectType Schema<{ readonly a: string; readonly b: number; }, { readonly a: string; readonly b: number; }>
 S.struct({ a: S.string, b: S.number }).pipe(S.rename({}))
 
 // $ExpectType Schema<{ readonly a: string; readonly b: number; }, { readonly c: string; readonly b: number; }>
-S.struct({ a: S.string, b: S.number }).pipe(S.rename({ a: 'c' }))
+S.struct({ a: S.string, b: S.number }).pipe(S.rename({ a: "c" }))
 
 // @ts-expect-error
-S.struct({ a: S.string, b: S.number }).pipe(S.rename({ c: 'd' }))
+S.struct({ a: S.string, b: S.number }).pipe(S.rename({ c: "d" }))
 
 // @ts-expect-error
-S.struct({ a: S.string, b: S.number }).pipe(S.rename({ a: 'c', d: 'e' }))
+S.struct({ a: S.string, b: S.number }).pipe(S.rename({ a: "c", d: "e" }))
 
 // ---------------------------------------------
 // optionFromSelf
@@ -729,7 +727,6 @@ export type MyClassTo = S.Schema.To<typeof MyClass>
 // $ExpectType Schema<{ readonly a: string; }, { readonly a: string; }>
 MyClass.struct
 
-
 class MyTaggedClass extends S.TaggedClass<MyTaggedClass>()("MyTaggedClass", {
   a: S.string
 }) {}
@@ -745,7 +742,6 @@ export type MyTaggedClassTo = S.Schema.To<typeof MyTaggedClass>
 
 // $ExpectType Schema<{ readonly _tag: "MyTaggedClass"; readonly a: string; }, { readonly _tag: "MyTaggedClass"; readonly a: string; }>
 MyTaggedClass.struct
-
 
 class VoidTaggedClass extends S.TaggedClass<VoidTaggedClass>()("VoidTaggedClass", {}) {}
 

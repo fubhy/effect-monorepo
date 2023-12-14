@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as S from "@effect/schema/Schema"
 
 const schema1 = S.union(S.string, S.array(S.string))

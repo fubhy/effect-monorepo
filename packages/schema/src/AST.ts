@@ -361,8 +361,7 @@ export const undefinedKeyword: UndefinedKeyword = {
  * @category guards
  * @since 1.0.0
  */
-export const isUndefinedKeyword = (ast: AST): ast is UndefinedKeyword =>
-  ast._tag === "UndefinedKeyword"
+export const isUndefinedKeyword = (ast: AST): ast is UndefinedKeyword => ast._tag === "UndefinedKeyword"
 
 /**
  * @category model
@@ -679,8 +678,7 @@ export const createTemplateLiteral = (
  * @category guards
  * @since 1.0.0
  */
-export const isTemplateLiteral = (ast: AST): ast is TemplateLiteral =>
-  ast._tag === "TemplateLiteral"
+export const isTemplateLiteral = (ast: AST): ast is TemplateLiteral => ast._tag === "TemplateLiteral"
 
 /**
  * @since 1.0.0
@@ -1101,8 +1099,7 @@ export const createFinalPropertySignatureTransformation = (
  */
 export const isFinalPropertySignatureTransformation = (
   ast: PropertySignatureTransformation
-): ast is FinalPropertySignatureTransformation =>
-  ast._tag === "FinalPropertySignatureTransformation"
+): ast is FinalPropertySignatureTransformation => ast._tag === "FinalPropertySignatureTransformation"
 
 /**
  * @category model
@@ -1335,9 +1332,7 @@ export const partial = (ast: AST): AST => {
       )
     case "TypeLiteral":
       return createTypeLiteral(
-        ast.propertySignatures.map((f) =>
-          createPropertySignature(f.name, f.type, true, f.isReadonly, f.annotations)
-        ),
+        ast.propertySignatures.map((f) => createPropertySignature(f.name, f.type, true, f.isReadonly, f.annotations)),
         ast.indexSignatures
       )
     case "Union":
@@ -1376,9 +1371,7 @@ export const required = (ast: AST): AST => {
       )
     case "TypeLiteral":
       return createTypeLiteral(
-        ast.propertySignatures.map((f) =>
-          createPropertySignature(f.name, f.type, false, f.isReadonly, f.annotations)
-        ),
+        ast.propertySignatures.map((f) => createPropertySignature(f.name, f.type, false, f.isReadonly, f.annotations)),
         ast.indexSignatures
       )
     case "Union":
@@ -1460,15 +1453,12 @@ export const getCompiler = <A>(match: Match<A>): Compiler<A> => {
 export const getToPropertySignatures = (
   ps: ReadonlyArray<PropertySignature>
 ): Array<PropertySignature> =>
-  ps.map((p) =>
-    createPropertySignature(p.name, to(p.type), p.isOptional, p.isReadonly, p.annotations)
-  )
+  ps.map((p) => createPropertySignature(p.name, to(p.type), p.isOptional, p.isReadonly, p.annotations))
 
 /** @internal */
 export const getToIndexSignatures = (
   ps: ReadonlyArray<IndexSignature>
-): Array<IndexSignature> =>
-  ps.map((is) => createIndexSignature(is.parameter, to(is.type), is.isReadonly))
+): Array<IndexSignature> => ps.map((is) => createIndexSignature(is.parameter, to(is.type), is.isReadonly))
 
 /**
  * @since 1.0.0
@@ -1527,12 +1517,8 @@ export const from = (ast: AST): AST => {
       )
     case "TypeLiteral":
       return createTypeLiteral(
-        ast.propertySignatures.map((p) =>
-          createPropertySignature(p.name, from(p.type), p.isOptional, p.isReadonly)
-        ),
-        ast.indexSignatures.map((is) =>
-          createIndexSignature(is.parameter, from(is.type), is.isReadonly)
-        )
+        ast.propertySignatures.map((p) => createPropertySignature(p.name, from(p.type), p.isOptional, p.isReadonly)),
+        ast.indexSignatures.map((is) => createIndexSignature(is.parameter, from(is.type), is.isReadonly))
       )
     case "Union":
       return createUnion(ast.types.map(from))
@@ -1588,8 +1574,7 @@ const maxWeight = Order.max<Weight>(WeightOrder)
 
 const emptyWeight: Weight = [0, 0, 0]
 
-const maxWeightAll = (weights: ReadonlyArray<Weight>): Weight =>
-  weights.reduce(maxWeight, emptyWeight)
+const maxWeightAll = (weights: ReadonlyArray<Weight>): Weight => weights.reduce(maxWeight, emptyWeight)
 
 /** @internal */
 export const getWeight = (ast: AST): Weight => {
@@ -1656,24 +1641,16 @@ const unify = (candidates: ReadonlyArray<AST>): ReadonlyArray<AST> => {
   }
   let i: number
   if ((i = out.findIndex(isStringKeyword)) !== -1) {
-    out = out.filter((m, j) =>
-      j === i || (!isStringKeyword(m) && !(isLiteral(m) && typeof m.literal === "string"))
-    )
+    out = out.filter((m, j) => j === i || (!isStringKeyword(m) && !(isLiteral(m) && typeof m.literal === "string")))
   }
   if ((i = out.findIndex(isNumberKeyword)) !== -1) {
-    out = out.filter((m, j) =>
-      j === i || (!isNumberKeyword(m) && !(isLiteral(m) && typeof m.literal === "number"))
-    )
+    out = out.filter((m, j) => j === i || (!isNumberKeyword(m) && !(isLiteral(m) && typeof m.literal === "number")))
   }
   if ((i = out.findIndex(isBooleanKeyword)) !== -1) {
-    out = out.filter((m, j) =>
-      j === i || (!isBooleanKeyword(m) && !(isLiteral(m) && typeof m.literal === "boolean"))
-    )
+    out = out.filter((m, j) => j === i || (!isBooleanKeyword(m) && !(isLiteral(m) && typeof m.literal === "boolean")))
   }
   if ((i = out.findIndex(isBigIntKeyword)) !== -1) {
-    out = out.filter((m, j) =>
-      j === i || (!isBigIntKeyword(m) && !(isLiteral(m) && typeof m.literal === "bigint"))
-    )
+    out = out.filter((m, j) => j === i || (!isBigIntKeyword(m) && !(isLiteral(m) && typeof m.literal === "bigint")))
   }
   if ((i = out.findIndex(isSymbolKeyword)) !== -1) {
     out = out.filter((m, j) => j === i || (!isSymbolKeyword(m) && !isUniqueSymbol(m)))
