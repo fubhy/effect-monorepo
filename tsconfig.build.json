@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "references": [
+    { "path": "packages/effect/tsconfig.build.json" },
+    { "path": "packages/cli/tsconfig.build.json" },
+    { "path": "packages/platform/tsconfig.build.json" },
+    { "path": "packages/platform-browser/tsconfig.build.json" },
+    { "path": "packages/platform-bun/tsconfig.build.json" },
+    { "path": "packages/platform-node/tsconfig.build.json" },
+    { "path": "packages/printer/tsconfig.build.json" },
+    { "path": "packages/printer-ansi/tsconfig.build.json" },
+    { "path": "packages/schema/tsconfig.build.json" }
+  ]
+}
