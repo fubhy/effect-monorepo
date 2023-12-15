@@ -8,7 +8,7 @@ import { defineWorkspace, mergeConfig, type UserWorkspaceConfig } from "vitest/c
 
 const defineProject = (pkg: string, name: string, config?: UserWorkspaceConfig["test"]) =>
   mergeConfig({
-    extends: "vitest.aliases.ts",
+    extends: "vitest.shared.ts",
     root: path.join(__dirname, pkg),
     test: { name, ...config }
   }, config)
