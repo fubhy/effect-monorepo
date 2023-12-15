@@ -11,7 +11,7 @@ jobs:
   snapshot:
     name: Snapshot
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/snapshot') }}
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Enforce permission requirement
