@@ -2,7 +2,6 @@
   "name": "effect",
   "version": "2.0.0-next.60",
   "type": "module",
-  "author": "Effect contributors",
   "license": "MIT",
   "description": "Functional programming in TypeScript",
   "homepage": "https://effect.website",

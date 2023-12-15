@@ -2,7 +2,6 @@
   "name": "@effect/schema",
   "version": "0.53.2",
   "type": "module",
-  "author": "Effect contributors",
   "license": "MIT",
   "description": "Modeling the schema of data structures as first-class values",
   "homepage": "https://effect.website",

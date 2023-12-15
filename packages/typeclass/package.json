@@ -2,7 +2,6 @@
   "name": "@effect/typeclass",
   "version": "0.19.1",
   "type": "module",
-  "author": "Effect contributors",
   "license": "MIT",
   "description": "A collection of reusable typeclasses for the Effect ecosystem",
   "homepage": "https://effect.website",

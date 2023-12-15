@@ -2,7 +2,6 @@
   "name": "@effect/cli",
   "version": "0.25.4",
   "type": "module",
-  "author": "Effect contributors",
   "license": "MIT",
   "description": "Functional programming in TypeScript",
   "homepage": "https://effect.website",
