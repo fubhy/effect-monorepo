@@ -24,7 +24,7 @@ jobs:
 
   bun:
     name: Bun
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: buildjet-32vcpu-ubuntu-2204
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
