@@ -22,7 +22,9 @@ export default defineProject({
       "@effect/printer-ansi/test": path.join(__dirname, "packages/printer-ansi/test"),
       "@effect/printer-ansi": path.join(__dirname, "packages/printer-ansi/src"),
       "@effect/schema/test": path.join(__dirname, "packages/schema/test"),
-      "@effect/schema": path.join(__dirname, "packages/schema/src")
+      "@effect/schema": path.join(__dirname, "packages/schema/src"),
+      "@effect/typeclass/test": path.join(__dirname, "packages/typeclass/test"),
+      "@effect/typeclass": path.join(__dirname, "packages/typeclass/src")
     }
   }
 })

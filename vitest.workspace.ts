@@ -18,6 +18,7 @@ export default defineWorkspace([
     fakeTimers: { toFake: undefined }
   }),
   defineProject("packages/schema", "schema"),
+  defineProject("packages/typeclass", "typeclass"),
   defineProject("packages/cli", "cli"),
   defineProject("packages/printer", "printer"),
   defineProject("packages/printer-ansi", "printer-ansi"),
