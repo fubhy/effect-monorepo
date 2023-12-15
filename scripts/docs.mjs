@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as Fs from "node:fs";
 import * as Path from "node:path";
 
@@ -10,7 +9,7 @@ function packages() {
 
 function pkgName(pkg) {
   const packageJson = Fs.readFileSync(
-    Path.join(process.cwd(), "packages", pkg, "package.json")
+    Path.join("packages", pkg, "package.json")
   );
   return JSON.parse(packageJson).name;
 }
