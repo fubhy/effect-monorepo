@@ -12,6 +12,8 @@ export default defineProject({
       "effect": path.join(__dirname, "packages/effect/src"),
       "@effect/cli/test": path.join(__dirname, "packages/cli/test"),
       "@effect/cli": path.join(__dirname, "packages/cli/src"),
+      "@effect/opentelemetry/test": path.join(__dirname, "packages/opentelemetry/test"),
+      "@effect/opentelemetry": path.join(__dirname, "packages/opentelemetry/src"),
       "@effect/platform/test": path.join(__dirname, "packages/platform", "test"),
       "@effect/platform": path.join(__dirname, "packages/platform", "src"),
       "@effect/platform-node/test": path.join(__dirname, "packages/platform-node", "test"),

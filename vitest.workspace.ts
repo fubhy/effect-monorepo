@@ -15,13 +15,14 @@ const defineProject = (pkg: string, name: string, config?: UserWorkspaceConfig["
 
 export default defineWorkspace([
   defineProject("packages/effect", "effect", { fakeTimers: { toFake: undefined } }),
-  defineProject("packages/schema", "schema"),
-  defineProject("packages/typeclass", "typeclass"),
   defineProject("packages/cli", "cli"),
+  defineProject("packages/opentelemetry", "opentelemetry"),
   defineProject("packages/printer", "printer"),
   defineProject("packages/printer-ansi", "printer-ansi"),
   defineProject("packages/platform", "platform"),
   defineProject("packages/platform-node", "platform-node"),
   defineProject("packages/platform-bun", "platform-bun"),
-  defineProject("packages/platform-browser", "platform-browser", { environment: "happy-dom" })
+  defineProject("packages/platform-browser", "platform-browser", { environment: "happy-dom" }),
+  defineProject("packages/schema", "schema"),
+  defineProject("packages/typeclass", "typeclass")
 ])
