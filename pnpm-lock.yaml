@@ -276,6 +276,266 @@ importers:
         version: 3.14.0
     publishDirectory: dist
 
+  packages/schema-1:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-10:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-11:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-12:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-13:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-14:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-15:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-16:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-17:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-18:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-19:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-2:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-20:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-3:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-4:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-5:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-6:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-7:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-8:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
+  packages/schema-9:
+    devDependencies:
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
+      fast-check:
+        specifier: ^3.14.0
+        version: 3.14.0
+    publishDirectory: dist
+
   packages/typeclass:
     devDependencies:
       effect:

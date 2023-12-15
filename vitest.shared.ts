@@ -1,6 +1,12 @@
 import * as path from "path"
 import { defineProject } from "vitest/config"
 
+const schemaCopies = {}
+for (let i = 1; i <= 20; i++) {
+  schemaCopies[`@effect/schema-${i}/test`] = path.join(__dirname, `packages/schema-${i}/test`)
+  schemaCopies[`@effect/schema-${i}`] = path.join(__dirname, `packages/schema-${i}/src`)
+}
+
 // This is a workaround, see https://github.com/vitest-dev/vitest/issues/4744
 export default defineProject({
   test: {
@@ -27,7 +33,8 @@ export default defineProject({
       "@effect/schema/test": path.join(__dirname, "packages/schema/test"),
       "@effect/schema": path.join(__dirname, "packages/schema/src"),
       "@effect/typeclass/test": path.join(__dirname, "packages/typeclass/test"),
-      "@effect/typeclass": path.join(__dirname, "packages/typeclass/src")
+      "@effect/typeclass": path.join(__dirname, "packages/typeclass/src"),
+      ...schemaCopies
     }
   }
 })

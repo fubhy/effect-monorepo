@@ -10,6 +10,26 @@
     { "path": "packages/printer/tsconfig.build.json" },
     { "path": "packages/printer-ansi/tsconfig.build.json" },
     { "path": "packages/schema/tsconfig.build.json" },
-    { "path": "packages/typeclass/tsconfig.build.json" }
+    { "path": "packages/typeclass/tsconfig.build.json" },
+    { "path": "packages/schema-1/tsconfig.build.json" },
+    { "path": "packages/schema-2/tsconfig.build.json" },
+    { "path": "packages/schema-3/tsconfig.build.json" },
+    { "path": "packages/schema-4/tsconfig.build.json" },
+    { "path": "packages/schema-5/tsconfig.build.json" },
+    { "path": "packages/schema-6/tsconfig.build.json" },
+    { "path": "packages/schema-7/tsconfig.build.json" },
+    { "path": "packages/schema-8/tsconfig.build.json" },
+    { "path": "packages/schema-9/tsconfig.build.json" },
+    { "path": "packages/schema-10/tsconfig.build.json" },
+    { "path": "packages/schema-11/tsconfig.build.json" },
+    { "path": "packages/schema-12/tsconfig.build.json" },
+    { "path": "packages/schema-13/tsconfig.build.json" },
+    { "path": "packages/schema-14/tsconfig.build.json" },
+    { "path": "packages/schema-15/tsconfig.build.json" },
+    { "path": "packages/schema-16/tsconfig.build.json" },
+    { "path": "packages/schema-17/tsconfig.build.json" },
+    { "path": "packages/schema-18/tsconfig.build.json" },
+    { "path": "packages/schema-19/tsconfig.build.json" },
+    { "path": "packages/schema-20/tsconfig.build.json" }
   ]
 }

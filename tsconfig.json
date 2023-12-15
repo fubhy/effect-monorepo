@@ -10,6 +10,27 @@
     { "path": "packages/printer" },
     { "path": "packages/printer-ansi" },
     { "path": "packages/schema" },
-    { "path": "packages/typeclass" }
+    { "path": "packages/typeclass" },
+    // Schema copies
+    { "path": "packages/schema-1" },
+    { "path": "packages/schema-2" },
+    { "path": "packages/schema-3" },
+    { "path": "packages/schema-4" },
+    { "path": "packages/schema-5" },
+    { "path": "packages/schema-6" },
+    { "path": "packages/schema-7" },
+    { "path": "packages/schema-8" },
+    { "path": "packages/schema-9" },
+    { "path": "packages/schema-10" },
+    { "path": "packages/schema-11" },
+    { "path": "packages/schema-12" },
+    { "path": "packages/schema-13" },
+    { "path": "packages/schema-14" },
+    { "path": "packages/schema-15" },
+    { "path": "packages/schema-16" },
+    { "path": "packages/schema-17" },
+    { "path": "packages/schema-18" },
+    { "path": "packages/schema-19" },
+    { "path": "packages/schema-20" }
   ]
 }

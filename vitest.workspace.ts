@@ -13,6 +13,8 @@ const defineProject = (pkg: string, name: string, config?: UserWorkspaceConfig["
     test: { name, ...config }
   }, config)
 
+const schemaCopies = new Array(20).fill(0).map((_, i) => defineProject(`packages/schema-${i + 1}`, `schema-${i + 1}`))
+
 export default defineWorkspace([
   defineProject("packages/effect", "effect", { fakeTimers: { toFake: undefined } }),
   defineProject("packages/schema", "schema"),
@@ -23,5 +25,6 @@ export default defineWorkspace([
   defineProject("packages/platform", "platform"),
   defineProject("packages/platform-node", "platform-node"),
   defineProject("packages/platform-bun", "platform-bun"),
-  defineProject("packages/platform-browser", "platform-browser", { environment: "happy-dom" })
+  defineProject("packages/platform-browser", "platform-browser", { environment: "happy-dom" }),
+  ...schemaCopies
 ])
