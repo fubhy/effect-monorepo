@@ -14,7 +14,7 @@ concurrency:
 jobs:
   node:
     name: Node
-    runs-on: buildjet-32vcpu-ubuntu-2204
+    runs-on: buildjet-32vcpu-ubuntu-2204-arm
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
