@@ -14,7 +14,7 @@ concurrency:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: buildjet-4vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v3
         with:
@@ -35,7 +35,7 @@ jobs:
   deploy:
     name: Deploy
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: buildjet-4vcpu-ubuntu-2204
     needs: build
     permissions:
       pages: write # To deploy to GitHub Pages

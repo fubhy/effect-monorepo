@@ -14,7 +14,7 @@ concurrency:
 jobs:
   node:
     name: Node (${{ matrix.shard }})
-    runs-on: ubuntu-latest
+    runs-on: buildjet-4vcpu-ubuntu-2204
     timeout-minutes: 10
     strategy:
       fail-fast: false
@@ -28,7 +28,7 @@ jobs:
 
   # bun:
   #   name: Bun (${{ matrix.shard }})
-  #   runs-on: ubuntu-latest
+  #   runs-on: buildjet-4vcpu-ubuntu-2204
   #   timeout-minutes: 10
   #   strategy:
   #     fail-fast: false
