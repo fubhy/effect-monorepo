@@ -14,7 +14,7 @@ concurrency:
 jobs:
   node:
     name: Node
-    runs-on: buildjet-32vcpu-ubuntu-2204-arm
+    runs-on: buildjet-32vcpu-ubuntu-2204
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
@@ -22,18 +22,14 @@ jobs:
         uses: ./.github/actions/setup
       - run: pnpm vitest
 
-  # bun:
-  #   name: Bun (${{ matrix.shard }})
-  #   runs-on: buildjet-4vcpu-ubuntu-2204
-  #   timeout-minutes: 10
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       shard: [1/3, 2/3, 3/3]
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Install dependencies
-  #       uses: ./.github/actions/setup
-  #     - name: Install bun
-  #       uses: oven-sh/setup-bun@v1
-  #     - run: bun vitest --shard ${{ matrix.shard }}
+  bun:
+    name: Bun
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        uses: ./.github/actions/setup
+      - name: Install bun
+        uses: oven-sh/setup-bun@v1
+      - run: bun vitest
