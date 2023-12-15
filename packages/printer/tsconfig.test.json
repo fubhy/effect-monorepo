@@ -3,7 +3,8 @@
   "include": ["test"],
   "references": [
     { "path": "tsconfig.src.json" },
-    { "path": "../effect" }
+    { "path": "../effect" },
+    { "path": "../typeclass" }
   ],
   "compilerOptions": {
     "tsBuildInfoFile": ".tsbuildinfo/test.tsbuildinfo",

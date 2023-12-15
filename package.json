@@ -6,13 +6,14 @@
   ],
   "scripts": {
     "clean": "node scripts/clean.mjs",
-    "build": "tsc -b tsconfig.build.json && pnpm --recursive run build",
+    "build": "tsc -b tsconfig.build.json && pnpm --recursive --parallel run build",
     "circular": "madge --extensions ts --circular --no-color --no-spinner packages/*/src",
     "test": "vitest",
     "coverage": "vitest --coverage",
     "check": "tsc -b tsconfig.json",
     "lint": "eslint \"packages/*/{src,test,examples,dtslint}/**/*.ts\"",
     "lint-fix": "pnpm lint --fix",
+    "docgen": "pnpm --recursive --parallel exec docgen && node scripts/docs.js",
     "dtslint": "pnpm --recursive --parallel run dtslint",
     "dtslint-clean": "dtslint --installAll"
   },
@@ -29,6 +30,7 @@
     "@effect/dtslint": "^0.0.4",
     "@effect/eslint-plugin": "^0.1.2",
     "@effect/language-service": "^0.1.0",
+    "@types/node": "^20.10.4",
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
     "@vitest/browser": "^1.0.4",

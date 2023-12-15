@@ -9,6 +9,7 @@
     { "path": "packages/platform-node" },
     { "path": "packages/printer" },
     { "path": "packages/printer-ansi" },
-    { "path": "packages/schema" }
+    { "path": "packages/schema" },
+    { "path": "packages/typeclass" }
   ]
 }

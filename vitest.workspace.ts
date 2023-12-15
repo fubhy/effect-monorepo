@@ -16,6 +16,7 @@ const defineProject = (pkg: string, name: string, config?: UserWorkspaceConfig["
 export default defineWorkspace([
   defineProject("packages/effect", "effect", { fakeTimers: { toFake: undefined } }),
   defineProject("packages/schema", "schema"),
+  defineProject("packages/typeclass", "typeclass"),
   defineProject("packages/cli", "cli"),
   defineProject("packages/printer", "printer"),
   defineProject("packages/printer-ansi", "printer-ansi"),
