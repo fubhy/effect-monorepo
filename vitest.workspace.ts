@@ -23,6 +23,11 @@ export default defineWorkspace([
   defineProject("packages/platform-node", "platform-node"),
   defineProject("packages/platform-bun", "platform-bun"),
   defineProject("packages/platform-browser", "platform-browser", { environment: "happy-dom" }),
+  defineProject("packages/rpc", "rpc"),
+  defineProject("packages/rpc-http", "rpc-http"),
+  defineProject("packages/rpc-http-node", "rpc-http-node"),
+  defineProject("packages/rpc-nextjs", "rpc-nextjs"),
+  defineProject("packages/rpc-workers", "rpc-workers"),
   defineProject("packages/schema", "schema"),
   defineProject("packages/typeclass", "typeclass")
 ])
