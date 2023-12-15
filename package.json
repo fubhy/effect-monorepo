@@ -6,15 +6,14 @@
   ],
   "scripts": {
     "clean": "node scripts/clean.mjs",
-    "build": "tsc -b tsconfig.build.json && pnpm --recursive run build",
+    "build": "tsc -b tsconfig.build.json && pnpm --recursive --parallel run build",
     "circular": "madge --extensions ts --circular --no-color --no-spinner packages/*/src",
     "test": "vitest",
     "coverage": "vitest --coverage",
     "check": "tsc -b tsconfig.json",
     "lint": "eslint \"packages/*/{src,test,examples,dtslint}/**/*.ts\"",
     "lint-fix": "pnpm lint --fix",
-    "docgen": "pnpm -r exec docgen && pnpm docgen-cp",
-    "docgen-cp": "node scripts/docs-cp.js",
+    "docgen": "pnpm --recursive --parallel exec docgen && node scripts/docs.js",
     "dtslint": "pnpm --recursive --parallel run dtslint",
     "dtslint-clean": "dtslint --installAll"
   },

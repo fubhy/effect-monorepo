@@ -242,8 +242,8 @@ importers:
   packages/printer:
     devDependencies:
       '@effect/typeclass':
-        specifier: ^0.19.0
-        version: 0.19.1(effect@packages+effect+dist)
+        specifier: workspace:*
+        version: link:../typeclass/dist
       effect:
         specifier: workspace:*
         version: link:../effect/dist
@@ -256,8 +256,8 @@ importers:
         version: link:../printer/dist
     devDependencies:
       '@effect/typeclass':
-        specifier: ^0.19.0
-        version: 0.19.1(effect@packages+effect+dist)
+        specifier: workspace:*
+        version: link:../typeclass/dist
       effect:
         specifier: workspace:*
         version: link:../effect/dist
@@ -274,6 +274,13 @@ importers:
       fast-check:
         specifier: ^3.14.0
         version: 3.14.0
+    publishDirectory: dist
+
+  packages/typeclass:
+    devDependencies:
+      effect:
+        specifier: workspace:*
+        version: link:../effect/dist
     publishDirectory: dist
 
 packages:
@@ -908,14 +915,6 @@ packages:
     dependencies:
       effect: link:packages/effect/dist
       fast-check: 3.14.0
-    dev: true
-
-  /@effect/typeclass@0.19.1(effect@packages+effect+dist):
-    resolution: {integrity: sha512-3FZpsDe76MIQqBBM3dyFSihvlkWqvGF4baxPLbsIuHJRLTeJyU7jGsuYP79aB78n96rRrRC4RQuMGmDKUkmanA==}
-    peerDependencies:
-      effect: 2.0.0-next.60
-    dependencies:
-      effect: link:packages/effect/dist
     dev: true
 
   /@esbuild/android-arm64@0.18.20:

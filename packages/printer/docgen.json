@@ -13,6 +13,19 @@
       "ES2022",
       "DOM"
     ],
-    "module": "ESNext"
+    "paths": {
+      "effect": [
+        "../../../effect/src/index.js"
+      ],
+      "effect/*": [
+        "../../../effect/src/*.js"
+      ],
+      "@effect/typeclass": [
+        "../../../typeclass/src/index.js"
+      ],
+      "@effect/typeclass/*": [
+        "../../../typeclass/src/*.js"
+      ]
+    }
   }
 }

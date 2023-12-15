@@ -3,20 +3,29 @@
   "exclude": [
     "src/internal/**/*.ts"
   ],
-  "parseCompilerOptions": {
-    "strict": true,
-    "target": "ES2022",
-    "lib": [
-      "ES2022",
-      "DOM"
-    ]
-  },
   "examplesCompilerOptions": {
+    "noEmit": true,
     "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
     "target": "ES2022",
     "lib": [
       "ES2022",
       "DOM"
-    ]
+    ],
+    "paths": {
+      "effect": [
+        "../../../effect/src/index.js"
+      ],
+      "effect/*": [
+        "../../../effect/src/*.js"
+      ],
+      "@effect/typeclass": [
+        "../../../typeclass/src/index.js"
+      ],
+      "@effect/typeclass/*": [
+        "../../../typeclass/src/*.js"
+      ]
+    }
   }
 }

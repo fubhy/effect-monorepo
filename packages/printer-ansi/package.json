@@ -39,11 +39,11 @@
     "@effect/printer": "workspace:^"
   },
   "devDependencies": {
-    "@effect/typeclass": "^0.19.0",
+    "@effect/typeclass": "workspace:*",
     "effect": "workspace:*"
   },
   "peerDependencies": {
-    "@effect/typeclass": "^0.19.0",
+    "@effect/typeclass": "workspace:*",
     "effect": "workspace:*"
   }
 }
