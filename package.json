@@ -15,7 +15,7 @@
     "check": "tsc -b tsconfig.json",
     "lint": "eslint \"packages/*/{src,test,examples,dtslint}/**/*.ts\"",
     "lint-fix": "pnpm lint --fix",
-    "docgen": "pnpm --recursive --parallel exec docgen && node scripts/docs.js",
+    "docgen": "pnpm --recursive --parallel exec docgen && node scripts/docs.mjs",
     "dtslint": "pnpm --recursive --parallel run dtslint",
     "dtslint-clean": "dtslint --installAll"
   },
