@@ -35,18 +35,18 @@
     "build-annotate": "babel build --plugins annotate-pure-calls --out-dir build --source-maps"
   },
   "peerDependencies": {
-    "@effect/platform": "workspace:*",
-    "@effect/printer": "workspace:*",
-    "@effect/printer-ansi": "workspace:*",
-    "@effect/schema": "workspace:*",
+    "@effect/platform": "workspace:^",
+    "@effect/printer": "workspace:^",
+    "@effect/printer-ansi": "workspace:^",
+    "@effect/schema": "workspace:^",
     "effect": "workspace:*"
   },
   "devDependencies": {
-    "@effect/platform": "workspace:*",
-    "@effect/platform-node": "workspace:*",
-    "@effect/printer": "workspace:*",
-    "@effect/printer-ansi": "workspace:*",
-    "@effect/schema": "workspace:*",
+    "@effect/platform": "workspace:^",
+    "@effect/platform-node": "workspace:^",
+    "@effect/printer": "workspace:^",
+    "@effect/printer-ansi": "workspace:^",
+    "@effect/schema": "workspace:^",
     "@types/node": "^20.10.4",
     "effect": "workspace:*"
   },

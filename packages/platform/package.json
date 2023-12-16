@@ -39,11 +39,11 @@
     "path-browserify": "^1.0.1"
   },
   "peerDependencies": {
-    "@effect/schema": "workspace:*",
+    "@effect/schema": "workspace:^",
     "effect": "workspace:*"
   },
   "devDependencies": {
-    "@effect/schema": "workspace:*",
+    "@effect/schema": "workspace:^",
     "@types/path-browserify": "^1.0.2",
     "effect": "workspace:*"
   },

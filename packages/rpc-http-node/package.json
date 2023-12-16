@@ -35,15 +35,15 @@
     "build-annotate": "babel build --plugins annotate-pure-calls --out-dir build --source-maps"
   },
   "dependencies": {
-    "@effect/rpc": "workspace:*",
-    "@effect/rpc-http": "workspace:*"
+    "@effect/rpc": "workspace:^",
+    "@effect/rpc-http": "workspace:^"
   },
   "devDependencies": {
-    "@effect/platform": "workspace:*",
-    "@effect/schema": "workspace:*"
+    "@effect/platform": "workspace:^",
+    "@effect/schema": "workspace:^"
   },
   "peerDependencies": {
-    "@effect/platform": "workspace:*",
+    "@effect/platform": "workspace:^",
     "effect": "workspace:*"
   }
 }

@@ -35,11 +35,11 @@
     "build-annotate": "babel build --plugins annotate-pure-calls --out-dir build --source-maps"
   },
   "devDependencies": {
-    "@effect/typeclass": "workspace:*",
+    "@effect/typeclass": "workspace:^",
     "effect": "workspace:*"
   },
   "peerDependencies": {
-    "@effect/typeclass": "workspace:*",
+    "@effect/typeclass": "workspace:^",
     "effect": "workspace:*"
   }
 }

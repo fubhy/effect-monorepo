@@ -35,14 +35,14 @@
     "build-annotate": "babel build --plugins annotate-pure-calls --out-dir build --source-maps"
   },
   "peerDependencies": {
-    "@effect/platform": "workspace:*",
-    "@effect/platform-node": "workspace:*",
+    "@effect/platform": "workspace:^",
+    "@effect/platform-node": "workspace:^",
     "effect": "workspace:*"
   },
   "devDependencies": {
-    "@effect/platform": "workspace:*",
-    "@effect/platform-node": "workspace:*",
-    "@effect/schema": "workspace:*",
+    "@effect/platform": "workspace:^",
+    "@effect/platform-node": "workspace:^",
+    "@effect/schema": "workspace:^",
     "bun-types": "^1.0.17",
     "effect": "workspace:*"
   },
