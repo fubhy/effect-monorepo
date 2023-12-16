@@ -6,4 +6,5 @@ tmp/
 dist/
 build/
 docs/
+scratchpad/
 .direnv/
