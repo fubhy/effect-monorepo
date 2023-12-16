@@ -120,19 +120,19 @@ importers:
   packages/cli:
     devDependencies:
       '@effect/platform':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform/dist
       '@effect/platform-node':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform-node/dist
       '@effect/printer':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../printer/dist
       '@effect/printer-ansi':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../printer-ansi/dist
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
       '@types/node':
         specifier: ^20.10.4
@@ -206,7 +206,7 @@ importers:
         version: 1.0.1
     devDependencies:
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
       '@types/path-browserify':
         specifier: ^1.0.2
@@ -219,7 +219,7 @@ importers:
   packages/platform-browser:
     devDependencies:
       '@effect/platform':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform/dist
       '@effect/schema':
         specifier: ^0.53.1
@@ -235,13 +235,13 @@ importers:
   packages/platform-bun:
     devDependencies:
       '@effect/platform':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform/dist
       '@effect/platform-node':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform-node/dist
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
       bun-types:
         specifier: ^1.0.17
@@ -261,10 +261,10 @@ importers:
         version: 0.1.21
     devDependencies:
       '@effect/platform':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform/dist
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
       '@types/mime':
         specifier: ^3.0.4
@@ -286,7 +286,7 @@ importers:
   packages/printer:
     devDependencies:
       '@effect/typeclass':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../typeclass/dist
       effect:
         specifier: workspace:*
@@ -300,7 +300,7 @@ importers:
         version: link:../printer/dist
     devDependencies:
       '@effect/typeclass':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../typeclass/dist
       effect:
         specifier: workspace:*
@@ -310,7 +310,7 @@ importers:
   packages/rpc:
     devDependencies:
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
       effect:
         specifier: workspace:*
@@ -324,13 +324,13 @@ importers:
         version: link:../rpc/dist
     devDependencies:
       '@effect/platform':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform/dist
       '@effect/platform-node':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform-node/dist
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
       effect:
         specifier: workspace:*
@@ -340,37 +340,37 @@ importers:
   packages/rpc-http-node:
     dependencies:
       '@effect/rpc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rpc/dist
       '@effect/rpc-http':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rpc-http/dist
       effect:
         specifier: workspace:*
         version: link:../effect/dist
     devDependencies:
       '@effect/platform':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform/dist
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
     publishDirectory: dist
 
   packages/rpc-nextjs:
     dependencies:
       '@effect/rpc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rpc/dist
       '@effect/rpc-http':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rpc-http/dist
     devDependencies:
       '@effect/platform':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform/dist
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
       effect:
         specifier: workspace:*
@@ -383,17 +383,17 @@ importers:
   packages/rpc-workers:
     dependencies:
       '@effect/rpc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../rpc/dist
     devDependencies:
       '@effect/platform':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform/dist
       '@effect/platform-browser':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../platform-browser/dist
       '@effect/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema/dist
       effect:
         specifier: workspace:*
