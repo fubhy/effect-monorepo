@@ -1,45 +1,38 @@
 import * as path from "path"
-import { defineProject } from "vitest/config"
+import type { UserWorkspaceConfig } from "vitest/config"
+
+const alias = (pkg: string) => ({
+  [`@effect/${pkg}/test`]: path.join(__dirname, "packages", pkg, "test"),
+  [`@effect/${pkg}`]: path.join(__dirname, "packages", pkg, "src")
+})
 
 // This is a workaround, see https://github.com/vitest-dev/vitest/issues/4744
-export default defineProject({
+const config: UserWorkspaceConfig = {
   test: {
     sequence: {
       concurrent: true
     },
     alias: {
+      // TODO: Should we use `effect/test` instead of `effect-test`?
       "effect-test": path.join(__dirname, "packages/effect/test"),
       "effect": path.join(__dirname, "packages/effect/src"),
-      "@effect/cli/test": path.join(__dirname, "packages/cli/test"),
-      "@effect/cli": path.join(__dirname, "packages/cli/src"),
-      "@effect/opentelemetry/test": path.join(__dirname, "packages/opentelemetry/test"),
-      "@effect/opentelemetry": path.join(__dirname, "packages/opentelemetry/src"),
-      "@effect/platform/test": path.join(__dirname, "packages/platform", "test"),
-      "@effect/platform": path.join(__dirname, "packages/platform", "src"),
-      "@effect/platform-node/test": path.join(__dirname, "packages/platform-node", "test"),
-      "@effect/platform-node": path.join(__dirname, "packages/platform-node", "src"),
-      "@effect/platform-bun/test": path.join(__dirname, "packages/platform-bun/test"),
-      "@effect/platform-bun": path.join(__dirname, "packages/platform-bun/src"),
-      "@effect/platform-browser/test": path.join(__dirname, "packages/platform-browser/test"),
-      "@effect/platform-browser": path.join(__dirname, "packages/platform-browser/src"),
-      "@effect/printer/test": path.join(__dirname, "packages/printer", "test"),
-      "@effect/printer": path.join(__dirname, "packages/printer", "src"),
-      "@effect/printer-ansi/test": path.join(__dirname, "packages/printer-ansi/test"),
-      "@effect/printer-ansi": path.join(__dirname, "packages/printer-ansi/src"),
-      "@effect/rpc/test": path.join(__dirname, "packages/rpc/test"),
-      "@effect/rpc": path.join(__dirname, "packages/rpc/src"),
-      "@effect/rpc-http/test": path.join(__dirname, "packages/rpc-http/test"),
-      "@effect/rpc-http": path.join(__dirname, "packages/rpc-http/src"),
-      "@effect/rpc-http-node/test": path.join(__dirname, "packages/rpc-http-node/test"),
-      "@effect/rpc-http-node": path.join(__dirname, "packages/rpc-http-node/src"),
-      "@effect/rpc-nextjs/test": path.join(__dirname, "packages/rpc-nextjs/test"),
-      "@effect/rpc-nextjs": path.join(__dirname, "packages/rpc-nextjs/src"),
-      "@effect/rpc-workers/test": path.join(__dirname, "packages/rpc-workers/test"),
-      "@effect/rpc-workers": path.join(__dirname, "packages/rpc-workers/src"),
-      "@effect/schema/test": path.join(__dirname, "packages/schema/test"),
-      "@effect/schema": path.join(__dirname, "packages/schema/src"),
-      "@effect/typeclass/test": path.join(__dirname, "packages/typeclass/test"),
-      "@effect/typeclass": path.join(__dirname, "packages/typeclass/src")
+      ...alias("cli"),
+      ...alias("opentelemetry"),
+      ...alias("platform"),
+      ...alias("platform-node"),
+      ...alias("platform-bun"),
+      ...alias("platform-browser"),
+      ...alias("printer"),
+      ...alias("printer-ansi"),
+      ...alias("rpc"),
+      ...alias("rpc-http"),
+      ...alias("rpc-http-node"),
+      ...alias("rpc-nextjs"),
+      ...alias("rpc-workers"),
+      ...alias("schema"),
+      ...alias("typeclass")
     }
   }
-})
+}
+
+export default config

@@ -1,33 +1,28 @@
 import * as path from "path"
-import { defineWorkspace, mergeConfig, type UserWorkspaceConfig } from "vitest/config"
+import { defineWorkspace, type UserWorkspaceConfig } from "vitest/config"
 
 // Remaining issues:
 // - Random failures (browser): https://github.com/vitest-dev/vitest/issues/4497
 // - Alias resolution (browser, has workaround): https://github.com/vitest-dev/vitest/issues/4744
 // - Workspace optimization: https://github.com/vitest-dev/vitest/issues/4746
 
-const defineProject = (pkg: string, name: string, config?: UserWorkspaceConfig["test"]) =>
-  mergeConfig({
-    extends: "vitest.shared.ts",
-    root: path.join(__dirname, pkg),
-    test: { name, ...config }
-  }, config)
+// TODO: Once https://github.com/vitest-dev/vitest/issues/4497 and https://github.com/vitest-dev/vitest/issues/4746
+// are resolved, we can create specialized workspace groups in separate workspace files to better control test groups
+// with different dependencies (e.g. playwright browser) in CI.
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const project = (
+  config: UserWorkspaceConfig["test"] & { name: `${string}|${string}` },
+  root = config.root ?? path.join(__dirname, `packages/${config.name.split("|").at(0)}`)
+) => ({
+  extends: "vitest.shared.ts",
+  test: { root, ...config }
+})
 
 export default defineWorkspace([
-  defineProject("packages/effect", "effect", { fakeTimers: { toFake: undefined } }),
-  defineProject("packages/cli", "cli"),
-  defineProject("packages/opentelemetry", "opentelemetry"),
-  defineProject("packages/printer", "printer"),
-  defineProject("packages/printer-ansi", "printer-ansi"),
-  defineProject("packages/platform", "platform"),
-  defineProject("packages/platform-node", "platform-node"),
-  defineProject("packages/platform-bun", "platform-bun"),
-  defineProject("packages/platform-browser", "platform-browser", { environment: "happy-dom" }),
-  defineProject("packages/rpc", "rpc"),
-  defineProject("packages/rpc-http", "rpc-http"),
-  defineProject("packages/rpc-http-node", "rpc-http-node"),
-  defineProject("packages/rpc-nextjs", "rpc-nextjs"),
-  defineProject("packages/rpc-workers", "rpc-workers"),
-  defineProject("packages/schema", "schema"),
-  defineProject("packages/typeclass", "typeclass")
+  // Add specialized configuration for some packages.
+  // project({ name: "effect|browser", environment: "happy-dom" }),
+  // project({ name: "schema|browser", environment: "happy-dom" }),
+  // Add the default configuration for all packages.
+  "packages/*"
 ])
