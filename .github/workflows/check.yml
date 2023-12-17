@@ -46,10 +46,4 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/setup
       - name: Test
-        run: |
-          pnpm vitest \
-            --shard ${{ matrix.shard }} \
-            --pool threads \
-            --poolOptions.threads.isolate false \
-            --poolOptions.threads.useAtomics true \
-            --poolOptions.threads.singleThread true
+        run: pnpm vitest --shard ${{ matrix.shard }}

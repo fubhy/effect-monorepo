@@ -9,18 +9,11 @@ const alias = (pkg: string) => ({
 // This is a workaround, see https://github.com/vitest-dev/vitest/issues/4744
 const config: UserConfig = {
   test: {
-    sequence: {
-      concurrent: true
-    },
     fakeTimers: {
       toFake: undefined
     },
-    // NOTE: This configuration must be applied via the cli when running the entire workspace test suite.
-    poolOptions: {
-      threads: {
-        isolate: false,
-        useAtomics: true
-      }
+    sequence: {
+      concurrent: true
     },
     alias: {
       // TODO: Should we use `effect/test` instead of `effect-test`?
