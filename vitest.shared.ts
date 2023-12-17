@@ -1,5 +1,5 @@
 import * as path from "path"
-import type { UserConfigExport } from "vitest/config"
+import type { UserConfig } from "vitest/config"
 
 const alias = (pkg: string) => ({
   [`@effect/${pkg}/test`]: path.join(__dirname, "packages", pkg, "test"),
@@ -7,13 +7,13 @@ const alias = (pkg: string) => ({
 })
 
 // This is a workaround, see https://github.com/vitest-dev/vitest/issues/4744
-const config: UserConfigExport = {
+const config: UserConfig = {
   test: {
-    fakeTimers: {
-      toFake: undefined
-    },
     sequence: {
       concurrent: true
+    },
+    fakeTimers: {
+      toFake: undefined
     },
     // NOTE: This configuration must be applied via the cli when running the entire workspace test suite.
     poolOptions: {

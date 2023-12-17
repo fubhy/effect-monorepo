@@ -4,7 +4,7 @@ import { Chunk, Effect, Stream } from "effect"
 import { assert, describe, it } from "vitest"
 import { GetPersonById, GetUserById, Person, User } from "./fixtures/schema.js"
 
-describe("Worker", () => {
+describe.sequential("Worker", () => {
   it("executes streams", () =>
     Effect.gen(function*(_) {
       const pool = yield* _(EffectWorker.makePool<number, never, number>({

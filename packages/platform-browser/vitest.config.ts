@@ -1,7 +1,7 @@
-import { mergeConfig, type UserProjectConfigExport } from "vitest/config"
+import { mergeConfig, type UserConfigExport } from "vitest/config"
 import shared from "../../vitest.shared.js"
 
-const config: UserProjectConfigExport = {
+const config: UserConfigExport = {
   test: {
     environment: "happy-dom"
   }
