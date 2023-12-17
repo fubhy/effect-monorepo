@@ -1,5 +1,5 @@
 import * as path from "path"
-import type { UserWorkspaceConfig } from "vitest/config"
+import type { UserConfigExport } from "vitest/config"
 
 const alias = (pkg: string) => ({
   [`@effect/${pkg}/test`]: path.join(__dirname, "packages", pkg, "test"),
@@ -7,10 +7,17 @@ const alias = (pkg: string) => ({
 })
 
 // This is a workaround, see https://github.com/vitest-dev/vitest/issues/4744
-const config: UserWorkspaceConfig = {
+const config: UserConfigExport = {
   test: {
     sequence: {
       concurrent: true
+    },
+    // NOTE: This configuration must be applied via the cli when running the entire workspace test suite.
+    poolOptions: {
+      threads: {
+        isolate: false,
+        useAtomics: true
+      }
     },
     alias: {
       // TODO: Should we use `effect/test` instead of `effect-test`?
