@@ -9,6 +9,9 @@ const alias = (pkg: string) => ({
 // This is a workaround, see https://github.com/vitest-dev/vitest/issues/4744
 const config: UserConfigExport = {
   test: {
+    fakeTimers: {
+      toFake: undefined
+    },
     sequence: {
       concurrent: true
     },
