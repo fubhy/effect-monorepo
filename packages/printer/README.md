@@ -1,6 +1,3 @@
-[![CI](https://github.com/Effect-TS/printer/actions/workflows/main.yml/badge.svg)](https://github.com/Effect-TS/printer/actions/workflows/main.yml)
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/Effect-TS/printer)
-
 # Pretty Printer for Effect-TS
 
 - [Pretty Printer for Effect-TS](#pretty-printer-for-effect-ts)

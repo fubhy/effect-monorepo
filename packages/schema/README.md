@@ -1,19 +1,3 @@
-<h3 align="center">
-  <a href="https://effect-ts.github.io/schema/">
-    <img src="./docs/example.png" width="500">
-  </a>
-</h3>
-
-<p align="center">
-Modeling the schema of data structures as first-class values
-</p>
-
-<p align="center">
-  <a href="https://www.npmjs.com/package/@effect/schema">
-    <img src="https://img.shields.io/npm/dm/@effect/schema.svg" alt="npm downloads" height="20">
-  </a>
-</p>
-
 # Introduction
 
 Welcome to the documentation for `@effect/schema`, **a library for defining and using schemas** to validate and transform data in TypeScript.
