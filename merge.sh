@@ -10,11 +10,11 @@ if [[ ! -z `git status --porcelain` ]]; then
   exit 1
 fi
 
-set -x
-
 # The path to the temporary directory that will be used to filter & prepare the repositories for merging. 
 packages=`pwd`/tmp/packages
 monorepo=`pwd`/tmp/monorepo
+
+echo "Creating workspace skeleton in $monorepo ..."
 
 # Set up a clean monorepo skeleton clone.
 rm -rf $monorepo
@@ -30,9 +30,10 @@ popd
 # Prepare the individual repositories for merging.
 rm -rf $packages && mkdir -p $packages
 
+echo "Preparing 'effect' for monorepo merge ..."
 gh repo clone effect-ts/effect $packages/effect
 pushd $packages/effect
-git filter-repo \
+git filter-repo --quiet \
   --path src/ \
   --path test/ \
   --path examples/ \
@@ -43,9 +44,10 @@ git filter-repo \
   --tag-rename 'v':'effect@v'
 popd
 
+echo "Preparing 'schema' for monorepo merge ..."
 gh repo clone effect-ts/schema $packages/schema
 pushd $packages/schema
-git filter-repo \
+git filter-repo --quiet \
   --path src/ \
   --path test/ \
   --path examples/ \
@@ -57,9 +59,10 @@ git filter-repo \
   --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/schema/pull/\1)", message)'
 popd
 
+echo "Preparing 'opentelemetry' for monorepo merge ..."
 gh repo clone effect-ts/opentelemetry $packages/opentelemetry
 pushd $packages/opentelemetry
-git filter-repo \
+git filter-repo --quiet \
   --path src/ \
   --path test/ \
   --path examples/ \
@@ -71,9 +74,10 @@ git filter-repo \
   --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/opentelemetry/pull/\1)", message)'
 popd
 
+echo "Preparing 'cli' for monorepo merge ..."
 gh repo clone effect-ts/cli $packages/cli
 pushd $packages/cli
-git filter-repo \
+git filter-repo --quiet \
   --path src/ \
   --path test/ \
   --path examples/ \
@@ -85,9 +89,10 @@ git filter-repo \
   --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/cli/pull/\1)", message)'
 popd
 
+echo "Preparing 'typeclass' for monorepo merge ..."
 gh repo clone effect-ts/typeclass $packages/typeclass
 pushd $packages/typeclass
-git filter-repo \
+git filter-repo --quiet \
   --path src/ \
   --path test/ \
   --path examples/ \
@@ -99,9 +104,10 @@ git filter-repo \
   --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/typeclass/pull/\1)", message)'
 popd
 
+echo "Preparing 'platform' for monorepo merge ..."
 gh repo clone effect-ts/platform $packages/platform
 pushd $packages/platform
-git filter-repo \
+git filter-repo --quiet \
   --path-glob 'packages/*/src/' \
   --path-glob 'packages/*/test/' \
   --path-glob 'packages/*/examples/' \
@@ -111,9 +117,10 @@ git filter-repo \
   --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/platform/pull/\1)", message)'
 popd
 
+echo "Preparing 'printer' for monorepo merge ..."
 gh repo clone effect-ts/printer $packages/printer
 pushd $packages/printer
-git filter-repo \
+git filter-repo --quiet \
   --path-glob 'packages/*/src/' \
   --path-glob 'packages/*/test/' \
   --path-glob 'packages/*/examples/' \
@@ -123,9 +130,10 @@ git filter-repo \
   --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/printer/pull/\1)", message)'
 popd
 
+echo "Preparing 'rpc' for monorepo merge ..."
 gh repo clone effect-ts/rpc $packages/rpc
 pushd $packages/rpc
-git filter-repo \
+git filter-repo --quiet \
   --path-glob 'packages/*/src/' \
   --path-glob 'packages/*/test/' \
   --path-glob 'packages/*/examples/' \
@@ -145,6 +153,7 @@ git filter-repo \
 popd
 
 # Merge the packages into the monorepo.
+echo "Merging packages into monorepo ..."
 pushd $monorepo
 for package in effect schema opentelemetry cli typeclass platform printer rpc; do
   git remote add $package $packages/$package
@@ -154,7 +163,8 @@ for package in effect schema opentelemetry cli typeclass platform printer rpc; d
 done
 popd
 
-# Copy the package.json files from the individual repositories into the monorepo.
+# Copy all other prepared files from the monorepo template into each package. 
+echo "Copying remaining package files into the monorepo ..."
 for file in $monorepo/packages/*/package.json; do
   package=`dirname $file`
   cp \
@@ -169,7 +179,7 @@ done
 
 # Install dependencies and generate pnpm-lock.yaml file.
 pushd $monorepo
-pnpm install
+pnpm install --quiet
 popd
 
 # ... The rest is up to you.
