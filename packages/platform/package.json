@@ -34,8 +34,8 @@
     "build-annotate": "babel build --plugins annotate-pure-calls --out-dir build --source-maps"
   },
   "dependencies": {
-    "find-my-way-ts": "^0.1.0",
-    "multipasta": "^0.1.19",
+    "find-my-way-ts": "^0.1.1",
+    "multipasta": "^0.1.21",
     "path-browserify": "^1.0.1"
   },
   "peerDependencies": {
