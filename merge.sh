@@ -7,7 +7,7 @@
 # Ensure that the git working directory is clean.
 if [[ ! -z `git status --porcelain` ]]; then 
   echo "Working directory not clean. Please backup all changes before running this script."
-  # exit 1
+  exit 1
 fi
 
 # The path to the temporary directory that will be used to filter & prepare the repositories for merging. 
@@ -20,7 +20,7 @@ rm -rf $monorepo
 git clone --branch main . $monorepo
 pushd $monorepo
 git checkout --orphan skeleton
-rm -rf packages pnpm-lock.yaml
+rm -rf packages pnpm-lock.yaml merge.sh
 git add . && git commit -m "workspace skeleton"
 git branch -D main && git branch -m skeleton main
 git remote remove origin
