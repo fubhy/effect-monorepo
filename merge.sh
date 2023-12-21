@@ -191,10 +191,16 @@ for file in packages/*/package.json; do
   jq --arg version $version '.version = $version' $file > $monorepo/packages/$package/package.json
 done
 
+pushd $monorepo
 # Install dependencies and generate pnpm-lock.yaml file.
 echo "Installing dependencies in monorepo ..."
-pushd $monorepo
 pnpm install --quiet
+git add .
+git commit -m "updated package.json files"
+# Linting all newly introduced packages.
+pnpm lint-fix
+git add .
+git commit -m "apply new linting rules"
 popd
 
 # ... The rest is up to you.
@@ -202,5 +208,5 @@ echo "All packages have been merged into the monorepo successfully."
 echo ""
 echo "Path: $monorepo"
 echo ""
-echo "You'll have to resolve conflicts (versions, dependencies, etc.) in the package.json files manually."
 echo "Make sure that the monorepo builds and passes all tests before committing the changes."
+echo "Definitely double check the last few commits."
