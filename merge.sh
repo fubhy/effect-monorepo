@@ -4,11 +4,11 @@
 # Before you start, make sure you have `git-filter-repo` installed and that
 # you have a clean working directory.
 
-## Ensure that the git working directory is clean.
-# if [[ ! -z `git status --porcelain` ]]; then 
-#   echo "Working directory not clean. Please backup all changes before running this script."
-#   exit 1
-# fi
+# Ensure that the git working directory is clean.
+if [[ ! -z `git status --porcelain` ]]; then 
+  echo "Working directory not clean. Please backup all changes before running this script."
+  exit 1
+fi
 
 set -x
 
