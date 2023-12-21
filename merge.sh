@@ -184,16 +184,17 @@ printf "\033c"
 
 # Copy all other prepared files from the monorepo template into each package. 
 echo "Copying remaining package files into the monorepo ..."
-for file in $monorepo/packages/*/package.json; do
-  package=`dirname $file`
+for file in packages/*/package.json; do
+  source=`dirname $file`
+  package=`basename $source`
   cp \
-    $package/package.json \
-    $package/docgen.json \
-    $package/tsconfig.* \
-    $package/vitest.config.ts \
-    $package/LICENSE \
-    $package/README.md \
-    $monorepo/$package
+    $source/package.json \
+    $source/docgen.json \
+    $source/tsconfig.* \
+    $source/vitest.config.ts \
+    $source/LICENSE \
+    $source/README.md \
+    $monorepo/packages/$package
 done
 
 printf "\033c"
