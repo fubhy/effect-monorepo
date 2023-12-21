@@ -188,13 +188,24 @@ for file in packages/*/package.json; do
   source=`dirname $file`
   package=`basename $source`
   cp \
-    $source/package.json \
     $source/docgen.json \
     $source/tsconfig.* \
     $source/vitest.config.ts \
     $source/LICENSE \
     $source/README.md \
     $monorepo/packages/$package
+done
+
+pushd $monorepo
+git add .
+git commit -m "adding package files"
+popd
+
+echo "Copying package.json files into the monorepo ..."
+for file in packages/*/package.json; do
+  source=`dirname $file`
+  package=`basename $source`
+  cp $source/package.json $monorepo/packages/$package/package.json
 done
 
 printf "\033c"
