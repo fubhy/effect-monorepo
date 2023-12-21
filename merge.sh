@@ -7,7 +7,7 @@
 # Ensure that the git working directory is clean.
 if [[ ! -z `git status --porcelain` ]]; then 
   echo "Working directory not clean. Please backup all changes before running this script."
-  # exit 1
+  exit 1
 fi
 
 # The path to the temporary directory that will be used to filter & prepare the repositories for merging. 
@@ -177,6 +177,11 @@ for file in packages/*/package.json; do
     $monorepo/packages/$package
 done
 
+# Override the dtslint/tsconfig.json files with a simpler version.
+for file in $monorepo/packages/*/dtslint/tsconfig.json; do
+  cp packages/effect/dtslint/tsconfig.json $file
+done
+
 pushd $monorepo
 git add .
 git commit -m "adding package files"
@@ -184,8 +189,7 @@ popd
 
 echo "Copying package.json files into the monorepo ..."
 for file in packages/*/package.json; do
-  source=`dirname $file`
-  package=`basename $source`
+  package=`basename $(dirname $file)`
   # Retain the `version` field from the original package.json file.
   version=`cat $monorepo/packages/$package/package.json | jq -r '.version'`
   jq --arg version $version '.version = $version' $file > $monorepo/packages/$package/package.json
