@@ -1,4 +1,4 @@
-import * as path from "path"
+import * as path from "node:path"
 import type { UserConfig } from "vitest/config"
 
 const alias = (pkg: string) => ({

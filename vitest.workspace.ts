@@ -1,4 +1,4 @@
-import * as path from "path"
+import * as path from "node:path"
 import { defineWorkspace, type UserWorkspaceConfig } from "vitest/config"
 
 // Remaining issues:
