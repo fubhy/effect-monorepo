@@ -41,6 +41,8 @@ git filter-repo --quiet \
   --path CHANGELOG.md \
   --to-subdirectory-filter packages/effect/ \
   --tag-rename 'v':'effect@v'
+git tag -d $(git tag -l "@effect-ts/*")
+git tag -d $(git tag -l "@effect/core*")
 popd
 
 echo "Preparing 'schema' for monorepo merge ..."
