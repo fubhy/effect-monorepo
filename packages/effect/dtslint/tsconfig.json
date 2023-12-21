@@ -3,6 +3,7 @@
   "include": ["."],
   "compilerOptions": {
     "incremental": false,
-    "composite": false
+    "composite": false,
+    "noUnusedLocals": false
   }
 }
