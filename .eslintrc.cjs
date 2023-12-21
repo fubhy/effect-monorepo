@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 module.exports = {
+  root: true,
   ignorePatterns: ["dist", "build", "docs", "*.md"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
