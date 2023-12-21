@@ -40,8 +40,6 @@ git filter-repo --quiet \
   --path CHANGELOG.md \
   --to-subdirectory-filter packages/effect/ \
   --tag-rename 'v':'effect@v'
-git tag -d $(git tag -l "@effect-ts/*")
-git tag -d $(git tag -l "@effect/core*")
 popd
 
 echo "Preparing 'schema' for monorepo merge ..."
@@ -161,6 +159,10 @@ for package in effect schema opentelemetry cli typeclass platform printer rpc; d
   git merge --allow-unrelated-histories --no-edit $package/main
   git remote remove $package
 done
+
+echo "Cleaning tags"
+git tag -d $(git tag -l "@effect-ts/*")
+git tag -d $(git tag -l "@effect/core*")
 popd
 
 # Copy all other prepared files from the monorepo template into each package. 
