@@ -17,12 +17,11 @@ monorepo=`pwd`/tmp/monorepo
 # Set up a clean monorepo skeleton clone.
 echo "Creating workspace skeleton in $monorepo ..."
 rm -rf $monorepo
-git clone --branch main . $monorepo
+git clone --branch skeleton . $monorepo
 pushd $monorepo
-git checkout --orphan skeleton
+git checkout --orphan main
 rm -rf packages pnpm-lock.yaml merge.sh
 git add . && git commit -m "workspace skeleton"
-git branch -D main && git branch -m skeleton main
 git remote remove origin
 popd
 
