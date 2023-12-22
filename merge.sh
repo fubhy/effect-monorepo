@@ -32,80 +32,126 @@ echo "Preparing 'effect' for monorepo merge ..."
 gh repo clone effect-ts/effect $packages/effect
 pushd $packages/effect
 git filter-repo --quiet \
+  --path-glob '.changeset/*.md' \
   --path src/ \
   --path test/ \
   --path examples/ \
   --path dtslint/ \
   --path package.json \
   --path CHANGELOG.md \
-  --to-subdirectory-filter packages/effect/ \
-  --tag-rename 'v':'effect@v'
+  --tag-rename 'v':'effect@v' \
+  --filename-callback '
+    if filename is None:
+      return None
+
+    if filename.startswith(b".changeset/"):
+      return filename
+
+    return b"packages/effect/" + filename
+  '
 popd
 
 echo "Preparing 'schema' for monorepo merge ..."
 gh repo clone effect-ts/schema $packages/schema
 pushd $packages/schema
 git filter-repo --quiet \
+  --path-glob '.changeset/*.md' \
   --path src/ \
   --path test/ \
   --path examples/ \
   --path dtslint/ \
   --path package.json \
   --path CHANGELOG.md \
-  --to-subdirectory-filter packages/schema/ \
   --tag-rename 'v':'@effect/schema@v' \
-  --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/schema/pull/\1)", message)'
+  --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/schema/pull/\1)", message)' \
+  --filename-callback '
+    if filename is None:
+      return None
+
+    if filename.startswith(b".changeset/"):
+      return filename
+
+    return b"packages/schema/" + filename
+  '
 popd
 
 echo "Preparing 'opentelemetry' for monorepo merge ..."
 gh repo clone effect-ts/opentelemetry $packages/opentelemetry
 pushd $packages/opentelemetry
 git filter-repo --quiet \
+  --path-glob '.changeset/*.md' \
   --path src/ \
   --path test/ \
   --path examples/ \
   --path dtslint/ \
   --path package.json \
   --path CHANGELOG.md \
-  --to-subdirectory-filter packages/opentelemetry/ \
   --tag-rename 'v':'@effect/opentelemetry@v' \
-  --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/opentelemetry/pull/\1)", message)'
+  --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/opentelemetry/pull/\1)", message)' \
+  --filename-callback '
+    if filename is None:
+      return None
+
+    if filename.startswith(b".changeset/"):
+      return filename
+
+    return b"packages/opentelemetry/" + filename
+  '
 popd
 
 echo "Preparing 'cli' for monorepo merge ..."
 gh repo clone effect-ts/cli $packages/cli
 pushd $packages/cli
 git filter-repo --quiet \
+  --path '.changeset/*.md' \
   --path src/ \
   --path test/ \
   --path examples/ \
   --path dtslint/ \
   --path package.json \
   --path CHANGELOG.md \
-  --to-subdirectory-filter packages/cli/ \
   --tag-rename 'v':'@effect/cli@v' \
-  --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/cli/pull/\1)", message)'
+  --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/cli/pull/\1)", message)' \
+  --filename-callback '
+    if filename is None:
+      return None
+
+    if filename.startswith(b".changeset/"):
+      return filename
+
+    return b"packages/cli/" + filename
+  '
 popd
 
 echo "Preparing 'typeclass' for monorepo merge ..."
 gh repo clone effect-ts/typeclass $packages/typeclass
 pushd $packages/typeclass
 git filter-repo --quiet \
+  --path-glob '.changeset/*.md' \
   --path src/ \
   --path test/ \
   --path examples/ \
   --path dtslint/ \
   --path package.json \
   --path CHANGELOG.md \
-  --to-subdirectory-filter packages/typeclass/ \
   --tag-rename 'v':'@effect/typeclass@v' \
-  --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/typeclass/pull/\1)", message)'
+  --message-callback 'return re.sub(br"(#(\d{1,3}))\n", br"(https://github.com/effect-ts/typeclass/pull/\1)", message)' \
+  --filename-callback '
+    if filename is None:
+      return None
+
+    if filename.startswith(b".changeset/"):
+      return filename
+    else:
+      return b"packages/typeclass/" + filename
+  '
 popd
 
 echo "Preparing 'platform' for monorepo merge ..."
 gh repo clone effect-ts/platform $packages/platform
 pushd $packages/platform
 git filter-repo --quiet \
+  --path-glob '.changeset/*.md' \
   --path-glob 'packages/*/src/' \
   --path-glob 'packages/*/test/' \
   --path-glob 'packages/*/examples/' \
@@ -119,6 +165,7 @@ echo "Preparing 'printer' for monorepo merge ..."
 gh repo clone effect-ts/printer $packages/printer
 pushd $packages/printer
 git filter-repo --quiet \
+  --path-glob '.changeset/*.md' \
   --path-glob 'packages/*/src/' \
   --path-glob 'packages/*/test/' \
   --path-glob 'packages/*/examples/' \
@@ -132,6 +179,7 @@ echo "Preparing 'rpc' for monorepo merge ..."
 gh repo clone effect-ts/rpc $packages/rpc
 pushd $packages/rpc
 git filter-repo --quiet \
+  --path-glob '.changeset/*.md' \
   --path-glob 'packages/*/src/' \
   --path-glob 'packages/*/test/' \
   --path-glob 'packages/*/examples/' \
@@ -143,10 +191,10 @@ git filter-repo --quiet \
     if filename is None:
       return None
 
-    if filename.startswith(b"packages/rpc/"):
-      return filename
-    else:
+    if filename.startswith(b"packages/") and not filename.startswith(b"packages/rpc/"):
       return b"packages/rpc-" + filename[9:]
+
+    return filename
   '
 popd
 
