@@ -1,17 +1,14 @@
 name: Release queue
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [main, next-minor, next-major]
   push:
-    branches: [next-minor, next-major]
+    branches: [main, next-minor, next-major]
 
 jobs:
   update:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v3
       - uses: tim-smart/next-release-action@main
