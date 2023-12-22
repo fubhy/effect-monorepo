@@ -7,7 +7,7 @@ import { assert, describe, expect, it } from "vitest"
 const _ = BigDecimal.unsafeFromString
 const assertEquals = (a: BigDecimal.BigDecimal, b: BigDecimal.BigDecimal) => assertTrue(BigDecimal.equals(a, b))
 
-describe.concurrent("BigDecimal", () => {
+describe("BigDecimal", () => {
   it("isBigDecimal", () => {
     assertTrue(BigDecimal.isBigDecimal(_("0")))
     assertTrue(BigDecimal.isBigDecimal(_("987")))
@@ -240,12 +240,12 @@ describe.concurrent("BigDecimal", () => {
   })
 
   it("normalize", () => {
-    deepStrictEqual(BigDecimal.normalize(_("0")), _("0"))
-    deepStrictEqual(BigDecimal.normalize(_("0.123000")), _("0.123"))
-    deepStrictEqual(BigDecimal.normalize(_("123.000")), _("123"))
-    deepStrictEqual(BigDecimal.normalize(_("-0.000123000")), _("-0.000123"))
-    deepStrictEqual(BigDecimal.normalize(_("-123.000")), _("-123"))
-    deepStrictEqual(BigDecimal.normalize(_("12300000")), BigDecimal.make(123n, -5))
+    deepStrictEqual(BigDecimal.normalize(_("0")), BigDecimal.unsafeMakeNormalized(0n, 0))
+    deepStrictEqual(BigDecimal.normalize(_("0.123000")), BigDecimal.unsafeMakeNormalized(123n, 3))
+    deepStrictEqual(BigDecimal.normalize(_("123.000")), BigDecimal.unsafeMakeNormalized(123n, 0))
+    deepStrictEqual(BigDecimal.normalize(_("-0.000123000")), BigDecimal.unsafeMakeNormalized(-123n, 6))
+    deepStrictEqual(BigDecimal.normalize(_("-123.000")), BigDecimal.unsafeMakeNormalized(-123n, 0))
+    deepStrictEqual(BigDecimal.normalize(_("12300000")), BigDecimal.unsafeMakeNormalized(123n, -5))
   })
 
   it("fromString", () => {
@@ -257,7 +257,7 @@ describe.concurrent("BigDecimal", () => {
     deepStrictEqual(BigDecimal.fromString("-20000000"), Option.some(BigDecimal.make(-20000000n, 0)))
     deepStrictEqual(BigDecimal.fromString("2.00"), Option.some(BigDecimal.make(200n, 2)))
     deepStrictEqual(BigDecimal.fromString("0.0000200"), Option.some(BigDecimal.make(200n, 7)))
-    deepStrictEqual(BigDecimal.fromString(""), Option.some(BigDecimal.make(0n, 0)))
+    deepStrictEqual(BigDecimal.fromString(""), Option.some(BigDecimal.normalize(BigDecimal.make(0n, 0))))
     deepStrictEqual(BigDecimal.fromString("1E5"), Option.none())
   })
 

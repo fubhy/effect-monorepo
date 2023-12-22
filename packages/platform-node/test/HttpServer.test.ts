@@ -3,7 +3,10 @@ import * as Platform from "@effect/platform-node/Http/Platform"
 import * as HttpC from "@effect/platform-node/HttpClient"
 import * as Http from "@effect/platform-node/HttpServer"
 import * as NodeContext from "@effect/platform-node/NodeContext"
+import * as ServerError from "@effect/platform/Http/ServerError"
+import type { ServerResponse } from "@effect/platform/Http/ServerResponse"
 import * as Schema from "@effect/schema/Schema"
+import { Deferred, Fiber } from "effect"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
@@ -79,7 +82,7 @@ describe("HttpServer", () => {
           "/upload",
           Effect.gen(function*(_) {
             const request = yield* _(Http.request.ServerRequest)
-            const formData = yield* _(request.formData)
+            const formData = yield* _(request.multipart)
             const part = formData.file
             assert(typeof part !== "string")
             const file = part[0]
@@ -100,15 +103,15 @@ describe("HttpServer", () => {
       expect(result).toEqual({ ok: true })
     }).pipe(Effect.scoped, runPromise))
 
-  it("schemaFormData", () =>
+  it("schemaBodyForm", () =>
     Effect.gen(function*(_) {
       yield* _(
         Http.router.empty,
         Http.router.post(
           "/upload",
           Effect.gen(function*(_) {
-            const files = yield* _(Http.request.schemaFormData(Schema.struct({
-              file: Http.formData.filesSchema,
+            const files = yield* _(Http.request.schemaBodyForm(Schema.struct({
+              file: Http.multipart.filesSchema,
               test: Schema.string
             })))
             expect(files).toHaveProperty("file")
@@ -137,16 +140,16 @@ describe("HttpServer", () => {
           "/upload",
           Effect.gen(function*(_) {
             const request = yield* _(Http.request.ServerRequest)
-            yield* _(request.formData)
+            yield* _(request.multipart)
             return Http.response.empty()
           }).pipe(Effect.scoped)
         ),
-        Effect.catchTag("FormDataError", (error) =>
+        Effect.catchTag("MultipartError", (error) =>
           error.reason === "FileTooLarge" ?
             Http.response.empty({ status: 413 }) :
             Effect.fail(error)),
         Http.server.serveEffect(),
-        Http.formData.withMaxFileSize(Option.some(100))
+        Http.multipart.withMaxFileSize(Option.some(100))
       )
       const client = yield* _(makeClient)
       const formData = new FormData()
@@ -166,16 +169,16 @@ describe("HttpServer", () => {
           "/upload",
           Effect.gen(function*(_) {
             const request = yield* _(Http.request.ServerRequest)
-            yield* _(request.formData)
+            yield* _(request.multipart)
             return Http.response.empty()
           }).pipe(Effect.scoped)
         ),
-        Effect.catchTag("FormDataError", (error) =>
+        Effect.catchTag("MultipartError", (error) =>
           error.reason === "FieldTooLarge" ?
             Http.response.empty({ status: 413 }) :
             Effect.fail(error)),
         Http.server.serveEffect(),
-        Http.formData.withMaxFieldSize(100)
+        Http.multipart.withMaxFieldSize(100)
       )
       const client = yield* _(makeClient)
       const formData = new FormData()
@@ -339,6 +342,98 @@ describe("HttpServer", () => {
       expect(response.status).toEqual(400)
     }).pipe(Effect.scoped, runPromise))
 
+  it("schemaBodyFormJson", () =>
+    Effect.gen(function*(_) {
+      yield* _(
+        Http.router.empty,
+        Http.router.post(
+          "/upload",
+          Effect.gen(function*(_) {
+            const result = yield* _(
+              Http.request.schemaBodyFormJson(Schema.struct({
+                test: Schema.string
+              }))("json")
+            )
+            expect(result.test).toEqual("content")
+            return Http.response.empty()
+          }).pipe(Effect.scoped)
+        ),
+        Effect.tapErrorCause(Effect.logError),
+        Http.server.serveEffect()
+      )
+      const client = yield* _(makeClient)
+      const formData = new FormData()
+      formData.append("json", JSON.stringify({ test: "content" }))
+      const response = yield* _(
+        client(HttpC.request.post("/upload", { body: HttpC.body.formData(formData) }))
+      )
+      expect(response.status).toEqual(204)
+    }).pipe(Effect.scoped, runPromise))
+
+  it("schemaBodyFormJson file", () =>
+    Effect.gen(function*(_) {
+      yield* _(
+        Http.router.empty,
+        Http.router.post(
+          "/upload",
+          Effect.gen(function*(_) {
+            const result = yield* _(
+              Http.request.schemaBodyFormJson(Schema.struct({
+                test: Schema.string
+              }))("json")
+            )
+            expect(result.test).toEqual("content")
+            return Http.response.empty()
+          }).pipe(Effect.scoped)
+        ),
+        Effect.tapErrorCause(Effect.logError),
+        Http.server.serveEffect()
+      )
+      const client = yield* _(makeClient)
+      const formData = new FormData()
+      formData.append(
+        "json",
+        new Blob([JSON.stringify({ test: "content" })], { type: "application/json" }),
+        "test.json"
+      )
+      const response = yield* _(
+        client(HttpC.request.post("/upload", { body: HttpC.body.formData(formData) }))
+      )
+      expect(response.status).toEqual(204)
+    }).pipe(Effect.scoped, runPromise))
+
+  it("schemaBodyFormJson url encoded", () =>
+    Effect.gen(function*(_) {
+      yield* _(
+        Http.router.empty,
+        Http.router.post(
+          "/upload",
+          Effect.gen(function*(_) {
+            const result = yield* _(
+              Http.request.schemaBodyFormJson(Schema.struct({
+                test: Schema.string
+              }))("json")
+            )
+            expect(result.test).toEqual("content")
+            return Http.response.empty()
+          }).pipe(Effect.scoped)
+        ),
+        Effect.tapErrorCause(Effect.logError),
+        Http.server.serveEffect()
+      )
+      const client = yield* _(makeClient)
+      const response = yield* _(
+        client(
+          HttpC.request.post("/upload", {
+            body: HttpC.body.urlParams(HttpC.urlParams.fromInput({
+              json: JSON.stringify({ test: "content" })
+            }))
+          })
+        )
+      )
+      expect(response.status).toEqual(204)
+    }).pipe(Effect.scoped, runPromise))
+
   it("tracing", () =>
     Effect.gen(function*(_) {
       yield* _(
@@ -346,7 +441,7 @@ describe("HttpServer", () => {
         Http.router.get(
           "/",
           Effect.flatMap(
-            Effect.flatten(Effect.currentSpan),
+            Effect.currentSpan,
             (_) => Http.response.json({ spanId: _.spanId, parent: _.parent })
           )
         ),
@@ -362,5 +457,21 @@ describe("HttpServer", () => {
         Effect.repeatN(2)
       )
       expect((body as any).parent.value.spanId).toEqual(requestSpan.spanId)
+    }).pipe(Effect.scoped, runPromise))
+
+  it("client abort", () =>
+    Effect.gen(function*(_) {
+      const latch = yield* _(Deferred.make<never, ServerResponse>())
+      yield* _(
+        Http.response.empty(),
+        Effect.delay(1000),
+        Http.server.serveEffect((app) => Effect.onExit(app, (exit) => Deferred.complete(latch, exit)))
+      )
+      const client = yield* _(makeClient)
+      const fiber = yield* _(client(HttpC.request.get("/")), Effect.fork)
+      yield* _(Effect.sleep(100))
+      yield* _(Fiber.interrupt(fiber))
+      const cause = yield* _(Deferred.await(latch), Effect.sandbox, Effect.flip)
+      expect(ServerError.isClientAbortCause(cause)).toEqual(true)
     }).pipe(Effect.scoped, runPromise))
 })

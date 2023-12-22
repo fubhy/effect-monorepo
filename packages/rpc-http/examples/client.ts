@@ -1,4 +1,4 @@
-import * as Http from "@effect/platform-node/HttpClient"
+import * as Http from "@effect/platform/HttpClient"
 import * as Client from "@effect/rpc-http/Client"
 import { Console, Effect } from "effect"
 import { schema } from "./schema.js"

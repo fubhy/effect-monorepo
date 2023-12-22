@@ -1,3 +1,4 @@
+import type * as ParseResult from "@effect/schema/ParseResult"
 import type * as Schema from "@effect/schema/Schema"
 import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
@@ -5,10 +6,10 @@ import * as Option from "effect/Option"
 import type * as Scope from "effect/Scope"
 import * as Stream from "effect/Stream"
 import type * as FileSystem from "../../FileSystem.js"
-import * as FormData from "../../Http/FormData.js"
 import * as Headers from "../../Http/Headers.js"
 import * as IncomingMessage from "../../Http/IncomingMessage.js"
 import type { Method } from "../../Http/Method.js"
+import * as Multipart from "../../Http/Multipart.js"
 import * as Error from "../../Http/ServerError.js"
 import type * as ServerRequest from "../../Http/ServerRequest.js"
 import * as UrlParams from "../../Http/UrlParams.js"
@@ -21,7 +22,7 @@ export const TypeId: ServerRequest.TypeId = Symbol.for("@effect/platform/Http/Se
 export const serverRequestTag = Context.Tag<ServerRequest.ServerRequest>(TypeId)
 
 /** @internal */
-export const persistedFormData = Effect.flatMap(serverRequestTag, (request) => request.formData)
+export const multipartPersisted = Effect.flatMap(serverRequestTag, (request) => request.multipart)
 
 /** @internal */
 export const schemaHeaders = <I extends Readonly<Record<string, string>>, A>(schema: Schema.Schema<I, A>) => {
@@ -35,6 +36,27 @@ export const schemaBodyJson = <I, A>(schema: Schema.Schema<I, A>) => {
   return Effect.flatMap(serverRequestTag, parse)
 }
 
+const isMultipart = (request: ServerRequest.ServerRequest) =>
+  request.headers["content-type"]?.toLowerCase().includes("multipart/form-data")
+
+/** @internal */
+export const schemaBodyForm = <I extends Multipart.Persisted, A>(
+  schema: Schema.Schema<I, A>
+) => {
+  const parseMultipart = Multipart.schemaPersisted(schema)
+  const parseUrlParams = IncomingMessage.schemaBodyUrlParams(schema as Schema.Schema<any, A>)
+  return Effect.flatMap(serverRequestTag, (request): Effect.Effect<
+    ServerRequest.ServerRequest | Scope.Scope | FileSystem.FileSystem | Path.Path,
+    Multipart.MultipartError | ParseResult.ParseError | Error.RequestError,
+    A
+  > => {
+    if (isMultipart(request)) {
+      return Effect.flatMap(request.multipart, parseMultipart)
+    }
+    return parseUrlParams(request)
+  })
+}
+
 /** @internal */
 export const schemaBodyUrlParams = <I extends Readonly<Record<string, string>>, A>(schema: Schema.Schema<I, A>) => {
   const parse = IncomingMessage.schemaBodyUrlParams(schema)
@@ -42,34 +64,41 @@ export const schemaBodyUrlParams = <I extends Readonly<Record<string, string>>, 
 }
 
 /** @internal */
-export const schemaFormData = <I extends FormData.PersistedFormData, A>(
+export const schemaBodyMultipart = <I extends Multipart.Persisted, A>(
   schema: Schema.Schema<I, A>
 ) => {
-  const parse = FormData.schemaPersisted(schema)
-  return Effect.flatMap(persistedFormData, parse)
+  const parse = Multipart.schemaPersisted(schema)
+  return Effect.flatMap(multipartPersisted, parse)
 }
 
 /** @internal */
-export const schemaFormDataJson = <I, A>(schema: Schema.Schema<I, A>) => {
-  const parse = FormData.schemaJson(schema)
+export const schemaBodyFormJson = <I, A>(schema: Schema.Schema<I, A>) => {
+  const parseMultipart = Multipart.schemaJson(schema)
+  const parseUrlParams = UrlParams.schemaJson(schema)
   return (field: string) =>
-    Effect.flatMap(serverRequestTag, (request) =>
-      Effect.flatMap(
-        request.formData,
-        (formData) =>
-          Effect.catchTag(
-            parse(formData, field),
-            "FormDataError",
-            (error) =>
-              Effect.fail(
-                Error.RequestError({
-                  reason: "Decode",
-                  request,
-                  error: error.error
-                })
-              )
+    Effect.flatMap(
+      serverRequestTag,
+      (
+        request
+      ): Effect.Effect<
+        FileSystem.FileSystem | Path.Path | Scope.Scope | ServerRequest.ServerRequest,
+        ParseResult.ParseError | Error.RequestError,
+        A
+      > => {
+        if (isMultipart(request)) {
+          return Effect.flatMap(
+            Effect.mapError(request.multipart, (error) =>
+              Error.RequestError({
+                request,
+                reason: "Decode",
+                error
+              })),
+            parseMultipart(field)
           )
-      ))
+        }
+        return Effect.flatMap(request.urlParamsBody, parseUrlParams(field))
+      }
+    )
 }
 
 /** @internal */
@@ -175,31 +204,31 @@ class ServerRequestImpl implements ServerRequest.ServerRequest {
       }))
   }
 
-  private formDataEffect:
+  private multipartEffect:
     | Effect.Effect<
       Scope.Scope | FileSystem.FileSystem | Path.Path,
-      FormData.FormDataError,
-      FormData.PersistedFormData
+      Multipart.MultipartError,
+      Multipart.Persisted
     >
     | undefined
-  get formData(): Effect.Effect<
+  get multipart(): Effect.Effect<
     Scope.Scope | FileSystem.FileSystem | Path.Path,
-    FormData.FormDataError,
-    FormData.PersistedFormData
+    Multipart.MultipartError,
+    Multipart.Persisted
   > {
-    if (this.formDataEffect) {
-      return this.formDataEffect
+    if (this.multipartEffect) {
+      return this.multipartEffect
     }
-    this.formDataEffect = Effect.runSync(Effect.cached(
-      FormData.formData(this.formDataStream)
+    this.multipartEffect = Effect.runSync(Effect.cached(
+      Multipart.toPersisted(this.multipartStream)
     ))
-    return this.formDataEffect
+    return this.multipartEffect
   }
 
-  get formDataStream(): Stream.Stream<never, FormData.FormDataError, FormData.Part> {
+  get multipartStream(): Stream.Stream<never, Multipart.MultipartError, Multipart.Part> {
     return Stream.pipeThroughChannel(
-      Stream.mapError(this.stream, (error) => FormData.FormDataError("InternalError", error)),
-      FormData.makeChannel(this.headers)
+      Stream.mapError(this.stream, (error) => Multipart.MultipartError("InternalError", error)),
+      Multipart.makeChannel(this.headers)
     )
   }
 

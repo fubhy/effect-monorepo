@@ -1,5 +1,5 @@
 /// <reference types="bun-types" />
-import * as FormData from "@effect/platform-node/Http/FormData"
+import * as Multipart from "@effect/platform-node/Http/Multipart"
 import type * as FileSystem from "@effect/platform/FileSystem"
 import * as App from "@effect/platform/Http/App"
 import * as Headers from "@effect/platform/Http/Headers"
@@ -49,13 +49,15 @@ export const make = (
     return Server.make({
       address: { _tag: "TcpAddress", port: server.port, hostname: server.hostname },
       serve(httpApp, middleware) {
-        const app = (middleware
-          ? middleware(App.withDefaultMiddleware(respond(httpApp)))
-          : App.withDefaultMiddleware(respond(httpApp))) as App.Default<never, unknown>
+        const app = Effect.scoped(
+          middleware
+            ? middleware(App.withDefaultMiddleware(respond(httpApp)))
+            : App.withDefaultMiddleware(respond(httpApp))
+        ) as App.Default<never, unknown>
 
         return pipe(
-          Effect.all([Effect.runtime<never>(), Effect.fiberId]),
-          Effect.flatMap(([runtime, fiberId]) =>
+          Effect.runtime<never>(),
+          Effect.flatMap((runtime) =>
             Effect.async<never, never, never>((_) => {
               const runFork = Runtime.runFork(runtime)
               function handler(request: Request, _server: BunServer) {
@@ -66,7 +68,7 @@ export const make = (
                     new ServerRequestImpl(request, resolve, reject, removeHost(request.url))
                   ))
                   request.signal.addEventListener("abort", () => {
-                    runFork(fiber.interruptAsFork(fiberId))
+                    runFork(fiber.interruptAsFork(Error.clientAbortFiberId))
                   })
                 })
               }
@@ -138,10 +140,17 @@ const respond = Middleware.make((httpApp) =>
         ),
         (exit) =>
           Effect.sync(() => {
+            const impl = request as ServerRequestImpl
             if (exit._tag === "Success") {
-              ;(request as ServerRequestImpl).resolve(makeResponse(request, exit.value))
+              impl.resolve(makeResponse(request, exit.value))
+            } else if (Cause.isInterruptedOnly(exit.cause)) {
+              impl.resolve(
+                new Response(undefined, {
+                  status: impl.source.signal.aborted ? 499 : 503
+                })
+              )
             } else {
-              ;(request as ServerRequestImpl).reject(Cause.pretty(exit.cause))
+              impl.reject(Cause.pretty(exit.cause))
             }
           })
       )
@@ -269,29 +278,29 @@ class ServerRequestImpl implements ServerRequest.ServerRequest {
       }))
   }
 
-  private formDataEffect:
+  private multipartEffect:
     | Effect.Effect<
       Scope.Scope | FileSystem.FileSystem | Path.Path,
-      FormData.FormDataError,
-      FormData.PersistedFormData
+      Multipart.MultipartError,
+      Multipart.Persisted
     >
     | undefined
-  get formData(): Effect.Effect<
+  get multipart(): Effect.Effect<
     Scope.Scope | FileSystem.FileSystem | Path.Path,
-    FormData.FormDataError,
-    FormData.PersistedFormData
+    Multipart.MultipartError,
+    Multipart.Persisted
   > {
-    if (this.formDataEffect) {
-      return this.formDataEffect
+    if (this.multipartEffect) {
+      return this.multipartEffect
     }
-    this.formDataEffect = Effect.runSync(Effect.cached(
-      FormData.formData(Readable.fromWeb(this.source.body! as any), this.headers)
+    this.multipartEffect = Effect.runSync(Effect.cached(
+      Multipart.persisted(Readable.fromWeb(this.source.body! as any), this.headers)
     ))
-    return this.formDataEffect
+    return this.multipartEffect
   }
 
-  get formDataStream(): Stream.Stream<never, FormData.FormDataError, FormData.Part> {
-    return FormData.stream(Readable.fromWeb(this.source.body! as any), this.headers)
+  get multipartStream(): Stream.Stream<never, Multipart.MultipartError, Multipart.Part> {
+    return Multipart.stream(Readable.fromWeb(this.source.body! as any), this.headers)
   }
 
   private arrayBufferEffect: Effect.Effect<never, Error.RequestError, ArrayBuffer> | undefined

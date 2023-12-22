@@ -1,18 +1,19 @@
 import * as FileSystem from "@effect/platform/FileSystem"
 import * as App from "@effect/platform/Http/App"
-import type * as FormData from "@effect/platform/Http/FormData"
 import type * as Headers from "@effect/platform/Http/Headers"
 import * as IncomingMessage from "@effect/platform/Http/IncomingMessage"
 import type { Method } from "@effect/platform/Http/Method"
 import * as Middleware from "@effect/platform/Http/Middleware"
+import type * as Multipart from "@effect/platform/Http/Multipart"
 import * as Server from "@effect/platform/Http/Server"
 import * as Error from "@effect/platform/Http/ServerError"
 import * as ServerRequest from "@effect/platform/Http/ServerRequest"
 import type * as ServerResponse from "@effect/platform/Http/ServerResponse"
 import type * as Path from "@effect/platform/Path"
+import * as Cause from "effect/Cause"
 import * as Config from "effect/Config"
 import * as Effect from "effect/Effect"
-import type { LazyArg } from "effect/Function"
+import { type LazyArg } from "effect/Function"
 import * as Layer from "effect/Layer"
 import * as Option from "effect/Option"
 import * as Runtime from "effect/Runtime"
@@ -23,8 +24,8 @@ import type * as Net from "node:net"
 import { Readable } from "node:stream"
 import { pipeline } from "node:stream/promises"
 import * as NodeSink from "../../Sink.js"
-import * as internalFormData from "./formData.js"
 import { IncomingMessageImpl } from "./incomingMessage.js"
+import * as internalMultipart from "./multipart.js"
 import * as internalPlatform from "./platform.js"
 
 /** @internal */
@@ -70,18 +71,15 @@ export const make = (
           port: address.port
         },
       serve: (httpApp, middleware) =>
-        makeHandler(httpApp, middleware!).pipe(
-          Effect.flatMap((handler) =>
-            Effect.async<never, never, never>((_resume) => {
-              server.on("request", handler)
-              return Effect.sync(() => {
-                server.off("request", handler)
-              })
+        Effect.gen(function*(_) {
+          const handler = yield* _(makeHandler(httpApp, middleware!))
+          yield* _(Effect.addFinalizer(() =>
+            Effect.sync(() => {
+              server.off("request", handler)
             })
-          ),
-          Effect.forkScoped,
-          Effect.asUnit
-        )
+          ))
+          server.on("request", handler)
+        })
     })
   }).pipe(
     Effect.locally(
@@ -90,33 +88,10 @@ export const make = (
     )
   )
 
-const respond = Middleware.make((httpApp) =>
-  Effect.flatMap(ServerRequest.ServerRequest, (request) =>
-    Effect.tapErrorCause(
-      Effect.tap(
-        Effect.flatMap(
-          httpApp,
-          (response) => Effect.flatMap(App.preResponseHandler, (f) => f(request, response))
-        ),
-        (response) => handleResponse(request, response)
-      ),
-      (_cause) =>
-        Effect.sync(() => {
-          const nodeResponse = (request as ServerRequestImpl).response
-          if (!nodeResponse.headersSent) {
-            nodeResponse.writeHead(500)
-          }
-          if (!nodeResponse.writableEnded) {
-            nodeResponse.end()
-          }
-        })
-    ))
-)
-
 /** @internal */
 export const makeHandler: {
   <R, E>(httpApp: App.Default<R, E>): Effect.Effect<
-    Exclude<R, ServerRequest.ServerRequest>,
+    Exclude<R, ServerRequest.ServerRequest | Scope.Scope>,
     never,
     (nodeRequest: Http.IncomingMessage, nodeResponse: Http.ServerResponse) => void
   >
@@ -124,35 +99,65 @@ export const makeHandler: {
     httpApp: App.Default<R, E>,
     middleware: Middleware.Middleware.Applied<R, E, App>
   ): Effect.Effect<
-    Exclude<Effect.Effect.Context<App>, ServerRequest.ServerRequest>,
+    Exclude<Effect.Effect.Context<App>, ServerRequest.ServerRequest | Scope.Scope>,
     never,
     (nodeRequest: Http.IncomingMessage, nodeResponse: Http.ServerResponse) => void
   >
 } = <R, E>(httpApp: App.Default<R, E>, middleware?: Middleware.Middleware) => {
-  const handledApp = middleware
-    ? middleware(App.withDefaultMiddleware(respond(httpApp)))
-    : App.withDefaultMiddleware(respond(httpApp))
-  return Effect.map(
-    Effect.zip(Effect.runtime<R>(), Effect.fiberId),
-    ([runtime, fiberId]) => {
-      const runFork = Runtime.runFork(runtime)
-      return function handler(nodeRequest: Http.IncomingMessage, nodeResponse: Http.ServerResponse) {
-        const fiber = runFork(
-          Effect.provideService(
-            handledApp,
-            ServerRequest.ServerRequest,
-            new ServerRequestImpl(nodeRequest, nodeResponse)
-          )
-        )
-        nodeResponse.on("close", () => {
-          if (!nodeResponse.writableEnded) {
-            runFork(fiber.interruptAsFork(fiberId))
-          }
-        })
-      }
-    }
+  const handledApp = Effect.scoped(
+    middleware
+      ? middleware(App.withDefaultMiddleware(respond(httpApp)))
+      : App.withDefaultMiddleware(respond(httpApp))
   )
+  return Effect.map(Effect.runtime<R>(), (runtime) => {
+    const runFork = Runtime.runFork(runtime)
+    return function handler(nodeRequest: Http.IncomingMessage, nodeResponse: Http.ServerResponse) {
+      const fiber = runFork(
+        Effect.provideService(
+          handledApp,
+          ServerRequest.ServerRequest,
+          new ServerRequestImpl(nodeRequest, nodeResponse)
+        )
+      )
+      nodeResponse.on("close", () => {
+        if (!nodeResponse.writableEnded) {
+          if (!nodeResponse.headersSent) {
+            nodeResponse.writeHead(499)
+          }
+          nodeResponse.end()
+          runFork(fiber.interruptAsFork(Error.clientAbortFiberId))
+        }
+      })
+    }
+  })
 }
+
+const respond = Middleware.make((httpApp) =>
+  Effect.uninterruptibleMask((restore) =>
+    Effect.flatMap(ServerRequest.ServerRequest, (request) =>
+      Effect.tapErrorCause(
+        restore(
+          Effect.tap(
+            Effect.flatMap(
+              httpApp,
+              (response) => Effect.flatMap(App.preResponseHandler, (f) => f(request, response))
+            ),
+            (response) => handleResponse(request, response)
+          )
+        ),
+        (cause) =>
+          Effect.sync(() => {
+            const nodeResponse = (request as ServerRequestImpl).response
+            if (!nodeResponse.headersSent) {
+              nodeResponse.writeHead(Cause.isInterruptedOnly(cause) ? 503 : 500)
+            }
+            if (!nodeResponse.writableEnded) {
+              nodeResponse.end()
+            }
+          })
+      ))
+  )
+)
 
 class ServerRequestImpl extends IncomingMessageImpl<Error.RequestError> implements ServerRequest.ServerRequest {
   readonly [ServerRequest.TypeId]: ServerRequest.TypeId
@@ -202,29 +207,29 @@ class ServerRequestImpl extends IncomingMessageImpl<Error.RequestError> implemen
     return this.headersOverride
   }
 
-  private formDataEffect:
+  private multipartEffect:
     | Effect.Effect<
       Scope.Scope | FileSystem.FileSystem | Path.Path,
-      FormData.FormDataError,
-      FormData.PersistedFormData
+      Multipart.MultipartError,
+      Multipart.Persisted
     >
     | undefined
-  get formData(): Effect.Effect<
+  get multipart(): Effect.Effect<
     Scope.Scope | FileSystem.FileSystem | Path.Path,
-    FormData.FormDataError,
-    FormData.PersistedFormData
+    Multipart.MultipartError,
+    Multipart.Persisted
   > {
-    if (this.formDataEffect) {
-      return this.formDataEffect
+    if (this.multipartEffect) {
+      return this.multipartEffect
     }
-    this.formDataEffect = Effect.runSync(Effect.cached(
-      internalFormData.formData(this.source, this.source.headers)
+    this.multipartEffect = Effect.runSync(Effect.cached(
+      internalMultipart.persisted(this.source, this.source.headers)
     ))
-    return this.formDataEffect
+    return this.multipartEffect
   }
 
-  get formDataStream(): Stream.Stream<never, FormData.FormDataError, FormData.Part> {
-    return internalFormData.stream(this.source, this.source.headers)
+  get multipartStream(): Stream.Stream<never, Multipart.MultipartError, Multipart.Part> {
+    return internalMultipart.stream(this.source, this.source.headers)
   }
 
   toString(): string {

@@ -12,11 +12,13 @@ import { identity, pipe } from "effect/Function"
 import * as Layer from "effect/Layer"
 import * as Pool from "effect/Pool"
 import * as Queue from "effect/Queue"
+import * as ReadonlyArray from "effect/ReadonlyArray"
+import * as Schedule from "effect/Schedule"
 import type * as Scope from "effect/Scope"
 import * as Stream from "effect/Stream"
 import * as Transferable from "../Transferable.js"
 import type * as Worker from "../Worker.js"
-import type { WorkerError } from "../WorkerError.js"
+import { WorkerError } from "../WorkerError.js"
 
 /** @internal */
 export const defaultQueue = <I>() =>
@@ -55,22 +57,71 @@ export const makeManager = Effect.gen(function*(_) {
   let idCounter = 0
   return WorkerManager.of({
     [WorkerManagerTypeId]: WorkerManagerTypeId,
-    spawn<I, E, O>({ encode, permits = 1, queue, spawn, transfers = (_) => [] }: Worker.Worker.Options<I>) {
+    spawn<I, E, O>({
+      encode,
+      initialMessage,
+      permits = 1,
+      queue,
+      spawn,
+      transfers = (_) => []
+    }: Worker.Worker.Options<I>) {
       return Effect.gen(function*(_) {
         const id = idCounter++
         let requestIdCounter = 0
-        const readyLatch = yield* _(Deferred.make<never, void>())
         const semaphore = yield* _(Effect.makeSemaphore(permits))
         const requestMap = new Map<
           number,
-          readonly [Queue.Queue<Exit.Exit<E | WorkerError, O>>, Deferred.Deferred<never, void>]
+          readonly [Queue.Queue<Exit.Exit<E | WorkerError, ReadonlyArray<O>>>, Deferred.Deferred<never, void>]
         >()
+        const sendQueue = yield* _(Effect.acquireRelease(
+          Queue.unbounded<readonly [message: Worker.Worker.Request, transfers?: ReadonlyArray<unknown>]>(),
+          Queue.shutdown
+        ))
 
         const outbound = queue ?? (yield* _(defaultQueue<I>()))
         yield* _(Effect.addFinalizer(() => outbound.shutdown))
 
-        const backing = yield* _(
-          platform.spawn<Worker.Worker.Request, Worker.Worker.Response<E, O>>(spawn(id))
+        yield* _(
+          Effect.gen(function*(_) {
+            const readyLatch = yield* _(Deferred.make<never, void>())
+            const backing = yield* _(
+              platform.spawn<Worker.Worker.Request, Worker.Worker.Response<E, O>>(spawn(id))
+            )
+            const send = pipe(
+              sendQueue.take,
+              Effect.flatMap(([message, transfers]) => backing.send(message, transfers)),
+              Effect.forever
+            )
+            const take = pipe(
+              Queue.take(backing.queue),
+              Effect.flatMap((msg) => {
+                if (msg[0] === 0) {
+                  return Deferred.complete(readyLatch, Effect.unit)
+                }
+                return handleMessage(msg[1])
+              }),
+              Effect.forever
+            )
+            return yield* _(Effect.all([
+              Fiber.join(backing.fiber),
+              Effect.zipRight(Deferred.await(readyLatch), send),
+              take
+            ], { concurrency: "unbounded" }))
+          }),
+          Effect.scoped,
+          Effect.onError((cause) =>
+            Effect.forEach(requestMap.values(), ([queue]) => Queue.offer(queue, Exit.failCause(cause)))
+          ),
+          Effect.retry(
+            Schedule.exponential("250 millis").pipe(
+              Schedule.union(Schedule.spaced("30 seconds"))
+            )
+          ),
+          Effect.annotateLogs({
+            package: "@effect/platform",
+            module: "Worker"
+          }),
+          Effect.forkScoped
         )
 
         yield* _(Effect.addFinalizer(() =>
@@ -82,42 +133,34 @@ export const makeManager = Effect.gen(function*(_) {
           )
         ))
 
-        const handleMessage = (msg: Worker.BackingWorker.Message<Worker.Worker.Response<E, O>>) =>
+        const handleMessage = (response: Worker.Worker.Response<E, O>) =>
           Effect.suspend(() => {
-            switch (msg[0]) {
-              case 0: {
-                return Deferred.complete(readyLatch, Effect.unit)
-              }
-              case 1: {
-                const response = msg[1]
-                const queue = requestMap.get(response[0])
-                if (!queue) return Effect.unit
+            const queue = requestMap.get(response[0])
+            if (!queue) return Effect.unit
 
-                switch (response[1]) {
-                  // data
-                  case 0: {
-                    return Queue.offer(queue[0], Exit.succeed(response[2]))
-                  }
-                  // end
-                  case 1: {
-                    return response.length === 2 ?
-                      Queue.offer(queue[0], Exit.failCause(Cause.empty)) :
-                      Effect.zipRight(
-                        Queue.offer(queue[0], Exit.succeed(response[2])),
-                        Queue.offer(queue[0], Exit.failCause(Cause.empty))
-                      )
-                  }
-                  // error / defect
-                  case 2:
-                  case 3: {
-                    return Queue.offer(
-                      queue[0],
-                      response[1] === 2
-                        ? Exit.fail(response[2])
-                        : Exit.die(response[2])
-                    )
-                  }
-                }
+            switch (response[1]) {
+              // data
+              case 0: {
+                return Queue.offer(queue[0], Exit.succeed(response[2]))
+              }
+              // end
+              case 1: {
+                return response.length === 2 ?
+                  Queue.offer(queue[0], Exit.failCause(Cause.empty)) :
+                  Effect.zipRight(
+                    Queue.offer(queue[0], Exit.succeed(response[2])),
+                    Queue.offer(queue[0], Exit.failCause(Cause.empty))
+                  )
+              }
+              // error / defect
+              case 2:
+              case 3: {
+                return Queue.offer(
+                  queue[0],
+                  response[1] === 2
+                    ? Exit.fail(response[2])
+                    : Exit.die(response[2])
+                )
               }
             }
           })
@@ -126,7 +169,7 @@ export const makeManager = Effect.gen(function*(_) {
           Effect.tap(
             Effect.all([
               Effect.sync(() => requestIdCounter++),
-              Queue.unbounded<Exit.Exit<E | WorkerError, O>>(),
+              Queue.unbounded<Exit.Exit<E | WorkerError, ReadonlyArray<O>>>(),
               Deferred.make<never, void>()
             ]),
             ([id, queue, deferred]) =>
@@ -137,18 +180,19 @@ export const makeManager = Effect.gen(function*(_) {
           )
 
         const executeRelease = (
-          [id, , deferred]: [number, Queue.Queue<Exit.Exit<E | WorkerError, O>>, Deferred.Deferred<never, void>],
+          [id, , deferred]: [
+            number,
+            Queue.Queue<Exit.Exit<E | WorkerError, ReadonlyArray<O>>>,
+            Deferred.Deferred<never, void>
+          ],
           exit: Exit.Exit<unknown, unknown>
         ) => {
           const release = Effect.zipRight(
             Deferred.complete(deferred, Effect.unit),
             Effect.sync(() => requestMap.delete(id))
           )
-          return Exit.isInterrupted(exit) ?
-            Effect.zipRight(
-              Effect.ignore(backing.send([id, 1])),
-              release
-            ) :
+          return Exit.isFailure(exit) ?
+            Effect.zipRight(sendQueue.offer([[id, 1]]), release) :
             release
         }
 
@@ -164,7 +208,7 @@ export const makeManager = Effect.gen(function*(_) {
                   Queue.take(queue),
                   Exit.match({
                     onFailure: (cause) => Cause.isEmpty(cause) ? Channel.unit : Channel.failCause(cause),
-                    onSuccess: (value) => Channel.flatMap(Channel.write(Chunk.of(value)), () => loop)
+                    onSuccess: (value) => Channel.flatMap(Channel.write(Chunk.unsafeFromArray(value)), () => loop)
                   })
                 )
               return Stream.fromChannel(loop)
@@ -174,18 +218,11 @@ export const makeManager = Effect.gen(function*(_) {
         const executeEffect = (request: I) =>
           Effect.acquireUseRelease(
             executeAcquire(request),
-            ([, queue]) => Effect.flatten(Queue.take(queue)),
+            ([, queue]) => Effect.flatMap(Queue.take(queue), Exit.map(ReadonlyArray.unsafeGet(0))),
             executeRelease
           )
 
-        const handleMessages = yield* _(
-          Queue.take(backing.queue),
-          Effect.flatMap(handleMessage),
-          Effect.forever,
-          Effect.forkScoped
-        )
-
-        const postMessages = pipe(
+        yield* _(
           semaphore.take(1),
           Effect.zipRight(outbound.take),
           Effect.flatMap(([id, request]) =>
@@ -194,35 +231,32 @@ export const makeManager = Effect.gen(function*(_) {
                 const result = requestMap.get(id)
                 if (!result) return Effect.unit
                 const transferables = transfers(request)
-                const payload = encode ? encode(request) : request
-                return Effect.zipRight(
-                  Effect.catchAllCause(
-                    backing.send([id, 0, payload], transferables),
-                    (cause) => Queue.offer(result[0], Exit.failCause(cause))
+                return pipe(
+                  Effect.flatMap(
+                    encode ? encode(request) : Effect.succeed(request),
+                    (payload) => sendQueue.offer([[id, 0, payload], transferables])
                   ),
-                  Deferred.await(result[1])
+                  Effect.catchAllCause((cause) => Queue.offer(result[0], Exit.failCause(cause))),
+                  Effect.zipRight(Deferred.await(result[1]))
                 )
               }),
               Effect.ensuring(semaphore.release(1)),
               Effect.fork
             )
           ),
-          Effect.forever
-        )
-
-        const postMessagesFiber = yield* _(
-          Deferred.await(readyLatch),
-          Effect.zipRight(postMessages),
+          Effect.forever,
           Effect.forkScoped
         )
 
-        const join = Fiber.joinAll([backing.fiber, handleMessages, postMessagesFiber]) as Effect.Effect<
-          never,
-          WorkerError,
-          never
-        >
+        if (initialMessage) {
+          yield* _(
+            Effect.sync(initialMessage),
+            Effect.flatMap(executeEffect),
+            Effect.mapError((error) => WorkerError("spawn", error))
+          )
+        }
 
-        return { id, join, execute, executeEffect }
+        return { id, execute, executeEffect }
       }).pipe(Effect.parallelFinalizers)
     }
   })
@@ -303,6 +337,9 @@ export const makeSerialized = <
         ...options,
         transfers(message) {
           return Transferable.get(message)
+        },
+        encode(message) {
+          return Effect.mapError(Serializable.serialize(message), (error) => WorkerError("encode", error))
         }
       })
     )
@@ -310,8 +347,7 @@ export const makeSerialized = <
       const parseSuccess = Schema.decode(Serializable.successSchema(message as any))
       const parseFailure = Schema.decode(Serializable.failureSchema(message as any))
       return pipe(
-        Serializable.serialize(message),
-        Stream.flatMap((message) => backing.execute(message)),
+        backing.execute(message),
         Stream.catchAll((error) => Effect.flatMap(parseFailure(error), Effect.fail)),
         Stream.mapEffect(parseSuccess)
       )
@@ -319,18 +355,13 @@ export const makeSerialized = <
     const executeEffect = <Req extends I>(message: Req) => {
       const parseSuccess = Schema.decode(Serializable.successSchema(message as any))
       const parseFailure = Schema.decode(Serializable.failureSchema(message as any))
-      return pipe(
-        Serializable.serialize(message),
-        Effect.flatMap((message) => backing.executeEffect(message)),
-        Effect.matchEffect({
-          onFailure: (error) => Effect.flatMap(parseFailure(error), Effect.fail),
-          onSuccess: parseSuccess
-        })
-      )
+      return Effect.matchEffect(backing.executeEffect(message), {
+        onFailure: (error) => Effect.flatMap(parseFailure(error), Effect.fail),
+        onSuccess: parseSuccess
+      })
     }
     return identity<Worker.SerializedWorker<I>>({
       id: backing.id,
-      join: backing.join,
       execute: execute as any,
       executeEffect: executeEffect as any
     })

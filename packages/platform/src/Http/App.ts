@@ -1,6 +1,7 @@
 /**
  * @since 1.0.0
  */
+import * as Cause from "effect/Cause"
 import * as Effect from "effect/Effect"
 import * as Exit from "effect/Exit"
 import * as FiberRef from "effect/FiberRef"
@@ -11,7 +12,7 @@ import * as ReadonlyArray from "effect/ReadonlyArray"
 import * as Runtime from "effect/Runtime"
 import * as Scope from "effect/Scope"
 import * as internalMiddleware from "../internal/http/middleware.js"
-import type * as ServerError from "./ServerError.js"
+import * as ServerError from "./ServerError.js"
 import * as ServerRequest from "./ServerRequest.js"
 import * as ServerResponse from "./ServerResponse.js"
 
@@ -107,16 +108,29 @@ export const withPreResponseHandler = dual<
  * @category conversions
  */
 export const toWebHandlerRuntime = <R>(runtime: Runtime.Runtime<R>) => {
-  const run = Runtime.runPromise(runtime)
-  return <E>(self: Default<R, E>) => {
+  const run = Runtime.runFork(runtime)
+  return <E>(self: Default<R | Scope.Scope, E>) => {
     self = withDefaultMiddleware(self)
-    return (request: Request): Promise<Response> => {
-      const req = ServerRequest.fromWeb(request)
-      return run(Effect.map(
-        Effect.provideService(self, ServerRequest.ServerRequest, req),
-        (res) => ServerResponse.toWeb(res, req.method === "HEAD")
-      ))
-    }
+    return (request: Request): Promise<Response> =>
+      new Promise((resolve, reject) => {
+        const req = ServerRequest.fromWeb(request)
+        const fiber = run(Effect.scoped(Effect.map(
+          Effect.provideService(self, ServerRequest.ServerRequest, req),
+          (res) => ServerResponse.toWeb(res, req.method === "HEAD")
+        )))
+        request.signal.addEventListener("abort", () => {
+          Effect.runFork(fiber.interruptAsFork(ServerError.clientAbortFiberId))
+        })
+        fiber.addObserver((exit) => {
+          if (Exit.isSuccess(exit)) {
+            resolve(exit.value)
+          } else if (Cause.isInterruptedOnly(exit.cause)) {
+            resolve(new Response(null, { status: request.signal.aborted ? 499 : 503 }))
+          } else {
+            reject(Cause.pretty(exit.cause))
+          }
+        })
+      })
   }
 }
 
@@ -124,7 +138,7 @@ export const toWebHandlerRuntime = <R>(runtime: Runtime.Runtime<R>) => {
  * @since 1.0.0
  * @category conversions
  */
-export const toWebHandler: <E>(self: Default<never, E>) => (request: Request) => Promise<Response> =
+export const toWebHandler: <E>(self: Default<Scope.Scope, E>) => (request: Request) => Promise<Response> =
   toWebHandlerRuntime(Runtime.defaultRuntime)
 
 /**
@@ -132,7 +146,7 @@ export const toWebHandler: <E>(self: Default<never, E>) => (request: Request) =>
  * @category conversions
  */
 export const toWebHandlerLayer = <R, E, RE>(
-  self: Default<R, E>,
+  self: Default<R | Scope.Scope, E>,
   layer: Layer.Layer<never, RE, R>
 ): {
   readonly close: () => Promise<void>

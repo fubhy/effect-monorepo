@@ -87,7 +87,7 @@ const provider = (map: Map<string, string>): ConfigProvider.ConfigProvider => {
   return ConfigProvider.fromMap(map)
 }
 
-describe.concurrent("ConfigProvider", () => {
+describe("ConfigProvider", () => {
   it.effect("flat atoms", () =>
     Effect.gen(function*($) {
       const map = new Map([["host", "localhost"], ["port", "8080"]])
@@ -899,5 +899,40 @@ describe.concurrent("ConfigProvider", () => {
       )
       const result = yield* $(configProvider.load(config))
       assert.deepStrictEqual(result, ["value1", "value2"])
+    }))
+
+  it.effect("fromJson - should load configs from flat JSON", () =>
+    Effect.gen(function*($) {
+      const result = yield* $(
+        ConfigProvider.fromJson({
+          host: "localhost",
+          port: 8080
+        }).load(hostPortConfig)
+      )
+      assert.deepStrictEqual(result, {
+        host: "localhost",
+        port: 8080
+      })
+    }))
+
+  it.effect("fromJson - should load configs from nested JSON", () =>
+    Effect.gen(function*($) {
+      const result = yield* $(
+        ConfigProvider.fromJson({
+          hostPorts: [{
+            host: "localhost",
+            port: 8080
+          }, {
+            host: "localhost",
+            port: 8080
+          }, {
+            host: "localhost",
+            port: 8080
+          }]
+        }).load(hostPortsConfig)
+      )
+      assert.deepStrictEqual(result, {
+        hostPorts: Array.from({ length: 3 }, () => ({ host: "localhost", port: 8080 }))
+      })
     }))
 })

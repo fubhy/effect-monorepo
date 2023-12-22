@@ -12,7 +12,7 @@ import * as Ref from "effect/Ref"
 import * as Runtime from "effect/Runtime"
 import { assert, describe } from "vitest"
 
-describe.concurrent("Effect", () => {
+describe("Effect", () => {
   it.effect("simple async must return", () =>
     Effect.gen(function*($) {
       const result = yield* $(Effect.async<never, unknown, number>((cb) => {
@@ -90,7 +90,7 @@ describe.concurrent("Effect", () => {
         Effect.ensuring(Ref.update(unexpectedPlace, Chunk.prepend(2))),
         Effect.forkDaemon
       )
-      const result = yield* $(Fiber.interrupt(fiber), Effect.timeout(Duration.seconds(1)))
+      const result = yield* $(Fiber.interrupt(fiber), Effect.timeout(Duration.seconds(1)), Effect.option)
       const unexpected = yield* $(Ref.get(unexpectedPlace))
       assert.deepStrictEqual(unexpected, Chunk.empty())
       assert.deepStrictEqual(result, Option.none()) // the timeout should happen
@@ -118,7 +118,7 @@ describe.concurrent("Effect", () => {
         Effect.uninterruptible,
         Effect.forkDaemon
       )
-      const result = yield* $(Fiber.interrupt(fiber), Effect.timeout(Duration.seconds(1)))
+      const result = yield* $(Fiber.interrupt(fiber), Effect.timeout(Duration.seconds(1)), Effect.option)
       const unexpected = yield* $(Ref.get(unexpectedPlace))
       assert.deepStrictEqual(unexpected, Chunk.empty())
       assert.deepStrictEqual(result, Option.none()) // timeout should happen

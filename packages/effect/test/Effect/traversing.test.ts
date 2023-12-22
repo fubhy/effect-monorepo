@@ -11,7 +11,7 @@ import * as ReadonlyArray from "effect/ReadonlyArray"
 import * as Ref from "effect/Ref"
 import { assert, describe } from "vitest"
 
-describe.concurrent("Effect", () => {
+describe("Effect", () => {
   it.effect("dropWhile - happy path", () =>
     Effect.gen(function*($) {
       const result = yield* $(
@@ -433,6 +433,16 @@ describe.concurrent("Effect", () => {
     Effect.gen(function*($) {
       const result = yield* $([3, 5, 7].map(Effect.succeed), Effect.mergeAll(1, (b, a) => b + a))
       assert.strictEqual(result, 1 + 3 + 5 + 7)
+    }))
+  it.effect("mergeAll - should work when Z is an interable", () =>
+    Effect.gen(function*($) {
+      const result = yield* $([3, 5, 7].map(Effect.succeed), Effect.mergeAll([] as Array<number>, (b, a) => [...b, a]))
+      assert.deepStrictEqual(result, [3, 5, 7])
+    }))
+  it.effect("mergeAll - should work when Z is a function", () =>
+    Effect.gen(function*($) {
+      const result = yield* $([3, 5, 7].map(Effect.succeed), Effect.mergeAll(() => 1, (_b, a) => () => a))
+      assert.deepStrictEqual(result(), 7)
     }))
   it.effect("mergeAll - return error if it exists in list", () =>
     Effect.gen(function*($) {

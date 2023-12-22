@@ -80,9 +80,9 @@ export const fiberLifetimes = metric.tagged(
   metric.histogram(
     "effect_fiber_lifetimes",
     metricBoundaries.exponential({
-      start: 1.0,
-      factor: 1.3,
-      count: 100
+      start: 0.5,
+      factor: 2,
+      count: 35
     })
   ),
   "time_unit",
@@ -2225,7 +2225,7 @@ export const mergeAll = dual<
     readonly batching?: boolean | "inherit" | undefined
   }) => Effect.Effect<R, E, Z>
 >(
-  (args) => Predicate.isIterable(args[0]),
+  (args) => Predicate.isFunction(args[2]),
   <R, E, A, Z>(elements: Iterable<Effect.Effect<R, E, A>>, zero: Z, f: (z: Z, a: A, i: number) => Z, options?: {
     readonly concurrency?: Concurrency | undefined
     readonly batching?: boolean | "inherit" | undefined

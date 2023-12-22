@@ -10,49 +10,60 @@ describe("Schema/extend", () => {
     })
 
     it(`struct with defaults extend struct`, async () => {
-      const schema = S.struct({ a: S.optional(S.string).withDefault(() => ""), b: S.string }).pipe(
-        S.extend(S.struct({ c: S.number }))
-      )
+      const schema = S.struct({
+        a: S.optional(S.string, { exact: true, default: () => "" }),
+        b: S.string
+      })
+        .pipe(
+          S.extend(S.struct({ c: S.number }))
+        )
       await Util.expectParseSuccess(schema, { b: "b", c: 1 }, { a: "", b: "b", c: 1 })
     })
 
     it(`struct extend struct with defaults`, async () => {
       const schema = S.struct({ a: S.number }).pipe(
         S.extend(
-          S.struct({ b: S.string, c: S.optional(S.string).withDefault(() => "") })
+          S.struct({ b: S.string, c: S.optional(S.string, { exact: true, default: () => "" }) })
         )
       )
       await Util.expectParseSuccess(schema, { a: 1, b: "b" }, { a: 1, b: "b", c: "" })
     })
 
     it(`struct with defaults extend struct with defaults `, async () => {
-      const schema = S.struct({ a: S.optional(S.string).withDefault(() => ""), b: S.string }).pipe(
-        S.extend(
-          S.struct({ c: S.optional(S.number).withDefault(() => 0), d: S.boolean })
+      const schema = S.struct({
+        a: S.optional(S.string, { exact: true, default: () => "" }),
+        b: S.string
+      })
+        .pipe(
+          S.extend(
+            S.struct({
+              c: S.optional(S.number, { exact: true, default: () => 0 }),
+              d: S.boolean
+            })
+          )
         )
-      )
       await Util.expectParseSuccess(schema, { b: "b", d: true }, { a: "", b: "b", c: 0, d: true })
     })
 
     it(`union with defaults extend union with defaults `, async () => {
       const schema = S.union(
         S.struct({
-          a: S.optional(S.string).withDefault(() => "a"),
+          a: S.optional(S.string, { exact: true, default: () => "a" }),
           b: S.string
         }),
         S.struct({
-          c: S.optional(S.string).withDefault(() => "c"),
+          c: S.optional(S.string, { exact: true, default: () => "c" }),
           d: S.string
         })
       ).pipe(
         S.extend(
           S.union(
             S.struct({
-              e: S.optional(S.string).withDefault(() => "e"),
+              e: S.optional(S.string, { exact: true, default: () => "e" }),
               f: S.string
             }),
             S.struct({
-              g: S.optional(S.string).withDefault(() => "g"),
+              g: S.optional(S.string, { exact: true, default: () => "g" }),
               h: S.string
             })
           )
@@ -227,7 +238,7 @@ describe("Schema/extend", () => {
 
       it("optional, transformation", async () => {
         const schema = S.struct({
-          a: S.optional(S.boolean).withDefault(() => true)
+          a: S.optional(S.boolean, { exact: true, default: () => true })
         }).pipe(
           S.extend(
             S.struct({
@@ -247,7 +258,7 @@ describe("Schema/extend", () => {
         }).pipe(
           S.extend(
             S.struct({
-              a: S.optional(S.boolean).withDefault(() => true)
+              a: S.optional(S.boolean, { exact: true, default: () => true })
             })
           )
         )
@@ -260,12 +271,9 @@ describe("Schema/extend", () => {
   })
 
   describe("encoding", () => {
-    // raises an error while encoding from a number if the string is not a char
-    const NumberFromChar = S.string.pipe(S.length(1), S.numberFromString)
-
     it("struct + record(string, NumberFromChar)", async () => {
       const schema = S.struct({ a: S.number }).pipe(
-        S.extend(S.record(S.string, NumberFromChar))
+        S.extend(S.record(S.string, Util.NumberFromChar))
       )
       await Util.expectEncodeSuccess(schema, { a: 1 }, { a: 1 })
       await Util.expectEncodeSuccess(schema, { a: 1, b: 1 }, { a: 1, b: "1" })
@@ -274,7 +282,7 @@ describe("Schema/extend", () => {
     it("struct + record(symbol, NumberFromChar)", async () => {
       const b = Symbol.for("@effect/schema/test/b")
       const schema = S.struct({ a: S.number }).pipe(
-        S.extend(S.record(S.symbolFromSelf, NumberFromChar))
+        S.extend(S.record(S.symbolFromSelf, Util.NumberFromChar))
       )
       await Util.expectEncodeSuccess(schema, { a: 1 }, { a: 1 })
       await Util.expectEncodeSuccess(schema, { a: 1, [b]: 1 }, { a: 1, [b]: "1" })

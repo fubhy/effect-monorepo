@@ -4,7 +4,7 @@ import * as Either from "effect/Either"
 import * as timeout from "effect/internal/timeout"
 import { describe, expect, it } from "vitest"
 
-describe.concurrent("Effect", () => {
+describe("Effect", () => {
   it("tryPromise - success, no catch, no AbortSignal", async () => {
     const effect = Effect.tryPromise<number>(() =>
       new Promise((resolve) => {
@@ -56,7 +56,8 @@ describe.concurrent("Effect", () => {
       })
     })
     const program = effect.pipe(
-      Effect.timeout("10 millis")
+      Effect.timeout("10 millis"),
+      Effect.optionFromOptional
     )
     const exit = await Effect.runPromiseExit(program)
     expect(exit._tag).toBe("Success")
@@ -79,7 +80,8 @@ describe.concurrent("Effect", () => {
       catch: () => new Error()
     })
     const program = effect.pipe(
-      Effect.timeout("10 millis")
+      Effect.timeout("10 millis"),
+      Effect.optionFromOptional
     )
     const exit = await Effect.runPromiseExit(program)
     expect(exit._tag).toBe("Success")

@@ -227,10 +227,10 @@ importers:
         specifier: workspace:^
         version: link:../platform/dist
       '@effect/schema':
-        specifier: ^0.56.0
-        version: 0.56.0(effect@packages+effect+dist)(fast-check@3.15.0)
+        specifier: workspace:^
+        version: link:../schema/dist
       effect:
-        specifier: 2.0.0-next.60
+        specifier: workspace:*
         version: link:../effect/dist
       happy-dom:
         specifier: ^12.10.3
@@ -259,8 +259,8 @@ importers:
   packages/platform-node:
     dependencies:
       mime:
-        specifier: ^4.0.1
-        version: 4.0.1
+        specifier: ^3.0.0
+        version: 3.0.0
       multipasta:
         specifier: ^0.1.21
         version: 0.1.21
@@ -981,16 +981,6 @@ packages:
 
   /@effect/language-service@0.1.0:
     resolution: {integrity: sha512-BnlM8LlaqCAYgdRfxlbR7gXGh/FD1scL1fPgNVJEPoOM08od1jtJz+iKhwfaud8TPnnhZR+TED2h5ynjanLeCQ==}
-    dev: true
-
-  /@effect/schema@0.56.0(effect@packages+effect+dist)(fast-check@3.15.0):
-    resolution: {integrity: sha512-qVR6T9+Lbv2cAhtIAysYvHpRm8iJuMjhp++q0ZMl3ACyQM4v9mvzEg1hQxF0GpAAHS7MTagVDDXN6WCNPEK4oA==}
-    peerDependencies:
-      effect: 2.0.0-next.62
-      fast-check: ^3.13.2
-    dependencies:
-      effect: link:packages/effect/dist
-      fast-check: 3.15.0
     dev: true
 
   /@esbuild/aix-ppc64@0.19.10:
@@ -4928,9 +4918,9 @@ packages:
       picomatch: 2.3.1
     dev: true
 
-  /mime@4.0.1:
-    resolution: {integrity: sha512-5lZ5tyrIfliMXzFtkYyekWbtRXObT9OWa8IwQ5uxTBDHucNNwniRqo0yInflj+iYi5CBa6qxadGzGarDfuEOxA==}
-    engines: {node: '>=16'}
+  /mime@3.0.0:
+    resolution: {integrity: sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==}
+    engines: {node: '>=10.0.0'}
     hasBin: true
     dev: false
 

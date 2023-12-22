@@ -3,5 +3,5 @@ import * as Kv from "@effect/platform-browser/KeyValueStore"
 import { testLayer } from "@effect/platform/test/KeyValueStore.test"
 import { describe } from "vitest"
 
-describe.sequential("KeyValueStore / layerLocalStorage", () => testLayer(Kv.layerLocalStorage))
-describe.sequential("KeyValueStore / layerSessionStorage", () => testLayer(Kv.layerSessionStorage))
+describe("KeyValueStore / layerLocalStorage", () => testLayer(Kv.layerLocalStorage))
+describe("KeyValueStore / layerSessionStorage", () => testLayer(Kv.layerSessionStorage))

@@ -698,7 +698,10 @@ describe("JSONSchema", () => {
     })
 
     it("optional property signature", () => {
-      const schema = Schema.struct({ a: Schema.string, b: Schema.optional(JsonNumber) })
+      const schema = Schema.struct({
+        a: Schema.string,
+        b: Schema.optional(JsonNumber, { exact: true })
+      })
       const jsonSchema = JSONSchema.to(schema)
       expect(jsonSchema).toStrictEqual({
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1268,6 +1271,64 @@ describe("JSONSchema", () => {
       })).toEqual(true)
       propertyTo(Operation, { params: { numRuns: 5 } })
     })
+
+    it("should handle identifier annotations when generating a schema through `from()`", () => {
+      interface Category {
+        readonly name: string
+        readonly categories: ReadonlyArray<Category>
+      }
+
+      const schema: Schema.Schema<Category> = Schema.struct({
+        name: Schema.string,
+        categories: Schema.array(Schema.suspend(() => schema).pipe(Schema.identifier("Category")))
+      })
+      const jsonSchema = JSONSchema.from(schema)
+      expect(jsonSchema).toEqual({
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "required": [
+          "name",
+          "categories"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "a string",
+            "title": "string"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/Category"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "$defs": {
+          "Category": {
+            "type": "object",
+            "required": [
+              "name",
+              "categories"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "a string",
+                "title": "string"
+              },
+              "categories": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/Category"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      })
+    })
   })
 
   it("Transform should raise an error", () => {
@@ -1303,16 +1364,16 @@ describe("JSONSchema", () => {
 
     it("struct properties support", () => {
       const schema = Schema.struct({
-        foo: Schema.propertySignature(Schema.string, {
+        foo: Schema.string.pipe(Schema.propertySignatureAnnotations({
           description: "foo description",
           title: "foo title",
           examples: ["foo example"]
-        }),
-        bar: Schema.propertySignature(JsonNumber, {
+        })),
+        bar: JsonNumber.pipe(Schema.propertySignatureAnnotations({
           description: "bar description",
           title: "bar title",
           examples: ["bar example"]
-        })
+        }))
       })
       const jsonSchema = JSONSchema.to(schema)
       expect(jsonSchema).toEqual({

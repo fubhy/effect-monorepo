@@ -5,7 +5,7 @@ import * as Option from "effect/Option"
 import * as RR from "effect/ReadonlyRecord"
 import { assert, describe, expect, it } from "vitest"
 
-describe.concurrent("ReadonlyRecord", () => {
+describe("ReadonlyRecord", () => {
   it("get", () => {
     expect(pipe({}, RR.get("a"))).toEqual(Option.none())
     expect(pipe({ a: 1 }, RR.get("a"))).toEqual(Option.some(1))
@@ -53,6 +53,17 @@ describe.concurrent("ReadonlyRecord", () => {
     })
   })
 
+  it("fromIterableBy", () => {
+    const users = [
+      { id: "2", name: "name2" },
+      { id: "1", name: "name1" }
+    ]
+    expect(RR.fromIterableBy(users, (user) => user.id)).toEqual({
+      "2": { id: "2", name: "name2" },
+      "1": { id: "1", name: "name1" }
+    })
+  })
+
   it("fromEntries", () => {
     const input: Array<[string, number]> = [["a", 1], ["b", 2]]
     expect(RR.fromEntries(input)).toEqual({ a: 1, b: 2 })
@@ -73,7 +84,7 @@ describe.concurrent("ReadonlyRecord", () => {
     assert.deepStrictEqual(RR.remove({ a: 1, b: 2 }, "c"), { a: 1, b: 2 })
   })
 
-  describe.concurrent("pop", () => {
+  describe("pop", () => {
     it("should return the value associated with the given key, if the key is present in the record", () => {
       const record = { a: 1, b: 2 }
       const result = RR.pop("a")(record)
@@ -89,7 +100,7 @@ describe.concurrent("ReadonlyRecord", () => {
     })
   })
 
-  describe.concurrent("filterMap", () => {
+  describe("filterMap", () => {
     it("should filter the properties of an object", () => {
       const obj = { a: 1, b: 2, c: 3 }
       const filtered = RR.filterMap(obj, (value, key) => (value > 2 ? Option.some(key) : Option.none()))
