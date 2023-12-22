@@ -8,7 +8,6 @@
   "scripts": {
     "clean": "node scripts/clean.mjs",
     "build": "tsc -b tsconfig.build.json && pnpm --recursive --parallel run build",
-    "update-version": "changeset version && node scripts/version.mjs",
     "circular": "madge --extensions ts --circular --no-color --no-spinner packages/*/src",
     "test": "vitest",
     "coverage": "vitest --coverage",
@@ -17,7 +16,9 @@
     "lint-fix": "pnpm lint --fix",
     "docgen": "pnpm --recursive --parallel exec docgen && node scripts/docs.mjs",
     "dtslint": "pnpm --recursive --parallel run dtslint",
-    "dtslint-clean": "dtslint --installAll"
+    "dtslint-clean": "dtslint --installAll",
+    "changeset-version": "changeset version && node scripts/version.mjs",
+    "changeset-release": "pnpm build && changeset publish"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
