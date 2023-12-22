@@ -1,22 +1,16 @@
 name: Release queue
 
 on:
-  pull_request:
+  pull_request_target:
     branches: [main, next-minor, next-major]
   push:
     branches: [main, next-minor, next-major]
-  issue_comment:
-    types: [created]
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: gh pr checkout ${{ github.event.issue.number }}
-        if: ${{ github.event.issue.pull_request && github.event.comment && startsWith(github.event.comment.body, '/approve') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: tim-smart/next-release-action@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
