@@ -5,6 +5,8 @@ on:
     branches: [main, next-minor, next-major]
   push:
     branches: [main, next-minor, next-major]
+  issue_comment:
+    types: [created]
 
 jobs:
   update:
