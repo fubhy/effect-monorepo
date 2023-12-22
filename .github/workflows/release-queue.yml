@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: gh pr checkout ${{ github.event.pull_request.number }}
-        if: ${{ github.event.pull_request }}
+        if: github.event.pull_request
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: tim-smart/next-release-action@main
