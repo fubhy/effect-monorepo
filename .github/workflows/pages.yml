@@ -1,11 +1,10 @@
 name: Pages
-
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main]
+    branches: [main, next-minor, next-major]
   push:
-    branches: [main]
+    branches: [main, next-minor, next-major]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

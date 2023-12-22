@@ -1,5 +1,4 @@
 name: Release queue
-
 on:
   pull_request_target:
     branches: [main, next-minor, next-major]
