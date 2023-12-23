@@ -221,13 +221,42 @@ const _Person = S.struct({
   age: S.number,
 });
 
-interface Person extends S.Schema.To<typeof Person> {}
+interface Person extends S.Schema.To<typeof _Person> {}
 
 // Re-declare the schema to create a schema with an opaque type
-const Person: Schema.Schema<Person> = Person_;
+const Person: S.Schema<Person> = _Person;
 ```
 
 Alternatively, you can use `Schema.Class` (see the [Class](#classes) section below for more details).
+
+Note that the technique shown above becomes more complex when the schema is defined such that `A` is different from `I`. For example:
+
+```ts
+import * as S from "@effect/schema/Schema";
+
+/*
+const _Person: S.Schema<{
+    readonly name: string;
+    readonly age: string;
+}, {
+    readonly name: string;
+    readonly age: number;
+}>
+*/
+const _Person = S.struct({
+  name: S.string,
+  age: S.NumberFromString,
+});
+
+interface Person extends S.Schema.To<typeof _Person> {}
+
+interface PersonFrom extends S.Schema.From<typeof _Person> {}
+
+// Re-declare the schema to create a schema with an opaque type
+const Person: S.Schema<PersonFrom, Person> = _Person;
+```
+
+In this case, the field `"age"` is of type `string` in the `From` type of the schema and is of type `number` in the `To` type of the schema. Therefore, we need to define **two** interfaces (`PersonFrom` and `Person`) and use both to redeclare our final schema `Person`.
 
 ## Parsing
 
