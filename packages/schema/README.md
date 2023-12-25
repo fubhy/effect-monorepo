@@ -82,22 +82,22 @@ Let's delve into this with an example.
 **With `exactOptionalPropertyTypes` Enabled**
 
 ```ts
-import * as Schema from "@effect/schema/Schema";
+import * as S from "@effect/schema/Schema";
 
 /*
-const schema: Schema.Schema<{
+const schema: S.Schema<{
     readonly myfield?: string; // the type is strict
 }, {
     readonly myfield?: string; // the type is strict
 }>
 */
-const schema = Schema.struct({
-  myfield: Schema.optional(Schema.string.pipe(Schema.nonEmpty()), {
+const schema = S.struct({
+  myfield: S.optional(S.string.pipe(S.nonEmpty()), {
     exact: true,
   }),
 });
 
-Schema.decodeSync(schema)({ myfield: undefined }); // Error: Type 'undefined' is not assignable to type 'string'.ts(2379)
+S.decodeSync(schema)({ myfield: undefined }); // Error: Type 'undefined' is not assignable to type 'string'.ts(2379)
 ```
 
 Here, notice that the type of `myfield` is strict (`string`), which means the type checker will catch any attempt to assign an invalid value (like `undefined`).
@@ -107,22 +107,22 @@ Here, notice that the type of `myfield` is strict (`string`), which means the ty
 If, for some reason, you can't enable the `exactOptionalPropertyTypes` option (perhaps due to conflicts with other third-party libraries), you can still use `@effect/schema`. However, there will be a mismatch between the types and the runtime behavior:
 
 ```ts
-import * as Schema from "@effect/schema/Schema";
+import * as S from "@effect/schema/Schema";
 
 /*
-const schema: Schema.Schema<{
+const schema: S.Schema<{
     readonly myfield?: string | undefined; // the type is widened to string | undefined
 }, {
     readonly myfield?: string | undefined; // the type is widened to string | undefined
 }>
 */
-const schema = Schema.struct({
-  myfield: Schema.optional(Schema.string.pipe(Schema.nonEmpty()), {
+const schema = S.struct({
+  myfield: S.optional(S.string.pipe(S.nonEmpty()), {
     exact: true,
   }),
 });
 
-Schema.decodeSync(schema)({ myfield: undefined }); // No type error, but a decoding failure occurs
+S.decodeSync(schema)({ myfield: undefined }); // No type error, but a decoding failure occurs
 /*
 Error: error(s) found
 └─ ["a"]
@@ -201,13 +201,20 @@ interface Person {
 */
 ```
 
-In this example, we use `interface` instead of `type`:
+Alternatively you can also extract a `type` instead of an `interface`:
 
 ```ts
 type Person = S.Schema.To<typeof Person>;
+/*
+Equivalent to:
+type Person {
+  readonly name: string;
+  readonly age: number;
+}
+*/
 ```
 
-to create an opaque type.
+### Advanced extracting Inferred Types
 
 In cases where `I` differs from `A`, you can also extract the inferred `I` type using `Schema.From`.
 
@@ -880,17 +887,17 @@ When defining a **refinement** (e.g., through the `filter` function), you can at
 
 ```ts
 import * as JSONSchema from "@effect/schema/JSONSchema";
-import * as Schema from "@effect/schema/Schema";
+import * as S from "@effect/schema/Schema";
 
 // Simulate one or more refinements
-const Positive = Schema.number.pipe(
-  Schema.filter((n) => n > 0, {
+const Positive = S.number.pipe(
+  S.filter((n) => n > 0, {
     jsonSchema: { minimum: 0 },
   })
 );
 
 const schema = Positive.pipe(
-  Schema.filter((n) => n <= 10, {
+  S.filter((n) => n <= 10, {
     jsonSchema: { maximum: 10 },
   })
 );
@@ -909,7 +916,7 @@ Output:
 */
 ```
 
-As seen in the example, the JSON Schema annotations are merged with the base JSON Schema from `Schema.number`. This approach helps handle multiple refinements while maintaining clarity in your code.
+As seen in the example, the JSON Schema annotations are merged with the base JSON Schema from `S.number`. This approach helps handle multiple refinements while maintaining clarity in your code.
 
 ## Generating Equivalences
 
@@ -1241,7 +1248,6 @@ There are two ways to define a schema for a branded type, depending on whether y
 To define a schema for a branded type from scratch, you can use the `brand` combinator exported by the `@effect/schema/Schema` module. Here's an example:
 
 ```ts
-import { pipe } from "effect/Function";
 import * as S from "@effect/schema/Schema";
 
 const UserId = S.string.pipe(S.brand("UserId"));
@@ -1251,7 +1257,6 @@ type UserId = S.Schema.To<typeof UserId>; // string & Brand<"UserId">
 Note that you can use `unique symbol`s as brands to ensure uniqueness across modules / packages:
 
 ```ts
-import { pipe } from "effect/Function";
 import * as S from "@effect/schema/Schema";
 
 const UserIdBrand = Symbol.for("UserId");
@@ -1270,7 +1275,6 @@ import * as B from "effect/Brand";
 type UserId = string & B.Brand<"UserId">;
 const UserId = B.nominal<UserId>();
 
-import { pipe } from "effect/Function";
 import * as S from "@effect/schema/Schema";
 
 // Define a schema for the branded type
@@ -1656,18 +1660,18 @@ S.mutable(S.struct({ a: S.string, b: S.number }));
 To rename one or more properties, you can utilize the `rename` API:
 
 ```ts
-import * as Schema from "@effect/schema/Schema";
+import * as S from "@effect/schema/Schema";
 
 // Original Schema
-const originalSchema = Schema.struct({ a: Schema.string, b: Schema.number });
+const originalSchema = S.struct({ a: S.string, b: S.number });
 
 // Renaming the "a" property to "c"
-const renamedSchema = Schema.rename(originalSchema, { a: "c" });
+const renamedSchema = S.rename(originalSchema, { a: "c" });
 
-Schema.parseSync(renamedSchema)({ a: "a", b: 1 }); // Output: { c: "a", b: 1 }
+S.parseSync(renamedSchema)({ a: "a", b: 1 }); // Output: { c: "a", b: 1 }
 ```
 
-In the example above, we have an original schema with properties "a" and "b." Using the `rename` API, we create a new schema where we rename the "a" property to "c." The resulting schema, when used with `Schema.parseSync`, transforms the input object by renaming the specified property.
+In the example above, we have an original schema with properties "a" and "b." Using the `rename` API, we create a new schema where we rename the "a" property to "c." The resulting schema, when used with `S.parseSync`, transforms the input object by renaming the specified property.
 
 ## Classes
 
